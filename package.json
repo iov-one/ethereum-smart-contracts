@@ -24,6 +24,7 @@
   "devDependencies": {
     "eslint": "^5.15.2",
     "eslint-config-prettier": "^4.1.0",
+    "ganache-cli": "^6.4.1",
     "prettier": "^1.16.4",
     "solhint": "^2.0.0",
     "truffle": "^5.0.8"
