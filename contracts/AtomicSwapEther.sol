@@ -52,7 +52,7 @@ contract AtomicSwapEther {
         address payable recipient,
         bytes32 hash,
         uint256 timeout
-    ) external onlyNonExistentSwaps(id) {
+    ) external payable onlyNonExistentSwaps(id) {
         swaps[id] = Swap({
             state: State.OPEN,
             recipient: recipient,
