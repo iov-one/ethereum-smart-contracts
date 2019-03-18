@@ -18,6 +18,33 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
+"@iov/bcp-types@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@iov/bcp-types/-/bcp-types-0.12.3.tgz#06d8d7b7236ce3feb588e1eb1bde90c17d752ee1"
+  integrity sha512-ep8A/ROGOCIWv/pYs44Do2R0yEwcPulzteb3Zxi4woEVDNtLuwcEeYmzqFMCB0f4YPzSivBsGg5FQueIS6VDWw==
+  dependencies:
+    "@iov/encoding" "^0.12.3"
+    "@iov/stream" "^0.12.3"
+    type-tagger "^1.0.0"
+    xstream "^11.10.0"
+
+"@iov/encoding@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@iov/encoding/-/encoding-0.12.3.tgz#d49f12846344ff8f73c5acc0e7e7a17d89d6d3b1"
+  integrity sha512-YKIcyyh+tr5a84pnSM9YvqKr3FI3SBn+GULrmQiODpdU7qYb2rKwbcqrpak1VkurkkJiUiHUSbPsq6SZ7XgG+Q==
+  dependencies:
+    base64-js "^1.3.0"
+    bech32 "^1.1.3"
+    bn.js "^4.11.8"
+    readonly-date "^1.0.0"
+
+"@iov/stream@^0.12.3":
+  version "0.12.3"
+  resolved "https://registry.yarnpkg.com/@iov/stream/-/stream-0.12.3.tgz#e4613ab23bc56a06dae4ebc18e5597855184cb25"
+  integrity sha512-IqOeIE+xz2EJ/5h0gr/hL2xFll0TgHK5iGs7E9IUpbmCA72asRMfFa/YpM3TIVwLgYjD+nbyBiRZTSGP3d0Eqg==
+  dependencies:
+    xstream "^11.10.0"
+
 "@types/node@^10.3.2":
   version "10.14.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.1.tgz#8701cd760acc20beba5ffe0b7a1b879f39cb8c41"
@@ -181,7 +208,7 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-base64-js@^1.0.2:
+base64-js@^1.0.2, base64-js@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/base64-js/-/base64-js-1.3.0.tgz#cab1e6118f051095e58b5281aea8c1cd22bfc0e3"
   integrity sha512-ccav/yGvoa80BQDljCxsmmQ3Xvx60/UpBIij5QN21W3wBi/hhIC9OoO+KLpu9IJTS9j4DRVJ3aDDF9cMSoa2lw==
@@ -192,6 +219,11 @@ bcrypt-pbkdf@^1.0.0:
   integrity sha1-pDAdOJtqQ/m2f/PKEaP2Y342Dp4=
   dependencies:
     tweetnacl "^0.14.3"
+
+bech32@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/bech32/-/bech32-1.1.3.tgz#bd47a8986bbb3eec34a56a097a84b8d3e9a2dfcd"
+  integrity sha512-yuVFUvrNcoJi0sv5phmqc6P+Fl1HjRDRNOOkHY2X/3LBy2bIGNSFx4fZ95HMaXHupuS7cZR15AsvtmCIF4UEyg==
 
 bignumber.js@^7.2.1:
   version "7.2.1"
@@ -235,7 +267,7 @@ bn.js@4.11.6:
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.6.tgz#53344adb14617a13f6e8dd2ce28905d1c0ba3215"
   integrity sha1-UzRK2xRhehP26N0s4okF0cC6MhU=
 
-bn.js@4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.11.6, bn.js@^4.4.0:
+bn.js@4.11.8, bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.11.6, bn.js@^4.11.8, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
   integrity sha512-ItfYfPLkWHUjckQCk8xC+LwxgK8NYcXywGigJgSwOP8Y2iyWT4f2vsZnoOXTTbo+o5yXmIUJ4gn5538SO5S3gA==
@@ -2566,6 +2598,11 @@ readable-stream@^2.3.0, readable-stream@^2.3.5:
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
+readonly-date@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/readonly-date/-/readonly-date-1.0.0.tgz#5af785464d8c7d7c40b9d738cbde8c646f97dcd9"
+  integrity sha512-tMKIV7hlk0h4mO3JTmmVuIlJVXjKk3Sep9Bf5OH0O+758ruuVkUy2J9SttDLm91IEX/WHlXPSpxMGjPj4beMIQ==
+
 regexpp@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-2.0.1.tgz#8d19d31cf632482b589049f8281f93dbcba4d07f"
@@ -3026,6 +3063,11 @@ swarm-js@0.1.37:
     tar.gz "^1.0.5"
     xhr-request-promise "^0.1.2"
 
+symbol-observable@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/symbol-observable/-/symbol-observable-1.2.0.tgz#c22688aed4eab3cdc2dfeacbb561660560a00804"
+  integrity sha512-e900nM8RRtGhlV36KGEU9k65K3mPb1WV70OdjfxlG2EAuM1noi/E/BaW/uMhL7bPEssK8QV57vN3esixjUvcXQ==
+
 table@^5.2.3:
   version "5.2.3"
   resolved "https://registry.yarnpkg.com/table/-/table-5.2.3.tgz#cde0cc6eb06751c009efab27e8c820ca5b67b7f2"
@@ -3198,6 +3240,11 @@ type-is@~1.6.16:
   dependencies:
     media-typer "0.3.0"
     mime-types "~2.1.18"
+
+type-tagger@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/type-tagger/-/type-tagger-1.0.0.tgz#dc6297e52e17097c1b92b42c16816a18f631e7f4"
+  integrity sha512-FIPqqpmDgdaulCnRoKv1/d3U4xVBUrYn42QXWNP3XYmgfPUDuBUsgFOb9ntT0aIe0UsUP+lknpQ5d9Kn36RssA==
 
 typedarray-to-buffer@^3.1.2:
   version "3.1.5"
@@ -3617,6 +3664,13 @@ xmlhttprequest@1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz#67fe075c5c24fef39f9d65f5f7b7fe75171968fc"
   integrity sha1-Z/4HXFwk/vOfnWX197f+dRcZaPw=
+
+xstream@^11.10.0:
+  version "11.10.0"
+  resolved "https://registry.yarnpkg.com/xstream/-/xstream-11.10.0.tgz#55a2769672711220fda61678080c130a6401be3d"
+  integrity sha512-jzFCiRqGtrJi2S1/RPxVFgJwWVBzy4suMPBXlhOi0BJC7VvsXgo2yOHWnOasnj24n2Dlj2Mgfl6fJXPOYmpHFA==
+  dependencies:
+    symbol-observable "1.2.0"
 
 xtend@^4.0.0:
   version "4.0.1"
