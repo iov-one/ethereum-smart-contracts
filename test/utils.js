@@ -22,8 +22,13 @@ function makeTimeout(seconds = 100) {
   return currentUnixTimestamp + seconds;
 }
 
+async function sleep(seconds) {
+  return new Promise(resolve => setTimeout(resolve, seconds * 1000));
+}
+
 module.exports = {
   makeRandomID,
   makeRandomAddress,
   makeTimeout,
+  sleep,
 };
