@@ -19,13 +19,13 @@ contract("AtomicSwapEther", (/*accounts*/) => {
   });
 
   describe("open()", () => {
-    it("emits an Open event", async () => {
+    it("emits an Opened event", async () => {
       const id = makeRandomID();
       const recipient = makeRandomAddress();
       const timeout = makeTimeout();
       const { tx } = await testContract.open(id, recipient, defaultHash, timeout);
 
-      await expectEvent.inTransaction(tx, atomicSwap, "Open", {
+      await expectEvent.inTransaction(tx, atomicSwap, "Opened", {
         id,
         recipient,
         hash: defaultHash,
