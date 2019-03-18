@@ -2,7 +2,7 @@ const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 const { expectEvent } = require("openzeppelin-test-helpers");
 
-const { makeRandomAddress, makeRandomID, makeTimeout } = require("./utils");
+const { makeRandomAddress, makeRandomID, makeTimeout, sleep } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");
 
@@ -122,5 +122,57 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to claim a swap which has already been aborted");
+  });
+
+  describe("abort()", () => {
+    it("emits an Aborted event", async () => {
+      const id = makeRandomID();
+      const timeout = makeTimeout(1);
+
+      await testContract.open(id, accounts[0], defaultHash, timeout);
+      await sleep(2);
+
+      const { tx } = await testContract.abort(id);
+
+      await expectEvent.inTransaction(tx, atomicSwap, "Aborted", {
+        id,
+      });
+    });
+
+    it("errors when attempting to abort a non-existent swap", async () => {
+      const id = makeRandomID();
+
+      await expect(testContract.abort(id)).to.be.rejectedWith(/no open swap found for the given id/i);
+    });
+
+    it("errors when attempting to abort before the timeout", async () => {
+      const id = makeRandomID();
+      const timeout = makeTimeout(1e15);
+
+      await testContract.open(id, accounts[0], defaultHash, timeout);
+
+      await expect(testContract.abort(id)).to.be.rejectedWith(/swap timeout has not been reached/i);
+    });
+
+    it("errors when attempting to abort a swap which has already been claimed", async () => {
+      const id = makeRandomID();
+      const timeout = makeTimeout();
+
+      await testContract.open(id, accounts[0], defaultHash, timeout);
+      await testContract.claim(id, defaultPreimage);
+
+      await expect(testContract.abort(id)).to.be.rejectedWith(/no open swap found for the given id/i);
+    });
+
+    it("errors when attempting to abort a swap which has already been aborted", async () => {
+      const id = makeRandomID();
+      const timeout = makeTimeout(1);
+
+      await testContract.open(id, accounts[0], defaultHash, timeout);
+      await sleep(2);
+      await testContract.abort(id);
+
+      await expect(testContract.abort(id)).to.be.rejectedWith(/no open swap found for the given id/i);
+    });
   });
 });
