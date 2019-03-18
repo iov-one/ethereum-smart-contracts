@@ -4,18 +4,21 @@ contract AtomicSwapEther {
     enum State {
         NON_EXISTENT,
         OPEN,
-        CLAIMED
+        CLAIMED,
+        ABORTED
     }
 
     struct Swap {
         State state;
         bytes32 hash;
+        uint256 timeout;
     }
 
     mapping (bytes32 => Swap) private swaps;
 
     event Opened(bytes32 id, address recipient, bytes32 hash);
     event Claimed(bytes32 id, bytes32 preimage);
+    event Aborted(bytes32 id);
 
     modifier onlyNonExistentSwaps(bytes32 id) {
         require(swaps[id].state == State.NON_EXISTENT, "Swap ID already exists");
@@ -32,6 +35,11 @@ contract AtomicSwapEther {
         _;
     }
 
+    modifier onlyAbortableSwaps(bytes32 id) {
+        require(now >= swaps[id].timeout, "Swap timeout has not been reached");
+        _;
+    }
+
     function open(
         bytes32 id,
         address payable recipient,
@@ -40,7 +48,8 @@ contract AtomicSwapEther {
     ) external onlyNonExistentSwaps(id) {
         swaps[id] = Swap({
             state: State.OPEN,
-            hash: hash
+            hash: hash,
+            timeout: timeout
         });
 
         emit Opened(id, recipient, hash);
@@ -52,5 +61,13 @@ contract AtomicSwapEther {
         swaps[id].state = State.CLAIMED;
         
         emit Claimed(id, preimage);
+    }
+
+    function abort(
+        bytes32 id
+    ) external onlyOpenSwaps(id) onlyAbortableSwaps(id) {
+        swaps[id].state = State.ABORTED;
+        
+        emit Aborted(id);
     }
 }
