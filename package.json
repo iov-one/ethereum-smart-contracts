@@ -1,0 +1,19 @@
+{
+  "name": "@iov/ethereum-smart-contracts",
+  "version": "0.0.0",
+  "description": "IOV's smart contracts for Ethereum",
+  "private": true,
+  "author": "IOV SAS <admin@iov.one>",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/iov-one/ethereum-smart-contracts#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iov-one/ethereum-smart-contracts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iov-one/ethereum-smart-contracts/issues"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
