@@ -14,6 +14,7 @@
     "url": "https://github.com/iov-one/ethereum-smart-contracts/issues"
   },
   "scripts": {
+    "compile": "truffle compile",
     "format": "prettier --write --loglevel warn \"./{,migrations,test}/*.{js,json,md}\"",
     "lint": "yarn run lint:js && yarn run lint:sol",
     "lint:js": "eslint .",

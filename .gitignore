@@ -17,3 +17,6 @@ node_modules/
 
 # Release dir
 tmp/
+
+# Built files
+build/
