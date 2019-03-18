@@ -14,6 +14,11 @@
     "url": "https://github.com/iov-one/ethereum-smart-contracts/issues"
   },
   "scripts": {
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint --fix .",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "eslint": "^5.15.2"
   }
 }
