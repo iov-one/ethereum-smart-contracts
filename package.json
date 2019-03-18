@@ -19,7 +19,7 @@
     "lint:js": "eslint .",
     "lint:js:fix": "eslint --fix .",
     "lint:sol": "solhint \"contracts/**/*.sol\"",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./scripts/test.sh"
   },
   "devDependencies": {
     "eslint": "^5.15.2",
