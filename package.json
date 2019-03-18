@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@iov/bcp-types": "^0.12.3",
+    "@iov/ethereum": "^0.12.3",
     "eslint": "^5.15.2",
     "eslint-config-prettier": "^4.1.0",
     "ganache-cli": "^6.4.1",
