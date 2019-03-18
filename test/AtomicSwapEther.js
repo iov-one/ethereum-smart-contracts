@@ -22,6 +22,17 @@ contract("AtomicSwapEther", accounts => {
   });
 
   describe("open()", () => {
+    it("accepts ether", async () => {
+      const id = makeRandomID();
+      const recipient = makeRandomAddress();
+      const timeout = makeTimeout();
+
+      await expect(testContract.open(id, recipient, defaultHash, timeout, {
+        from: accounts[0],
+        value: 50000,
+      })).not.to.be.rejected;
+    });
+
     it("emits an Opened event", async () => {
       const id = makeRandomID();
       const recipient = makeRandomAddress();
