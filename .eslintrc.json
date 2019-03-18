@@ -12,7 +12,6 @@
     "SharedArrayBuffer": "readonly",
     "artifacts": "readonly",
     "contract": "readonly",
-    "assert": "readonly",
     "web3": "readonly"
   },
   "parserOptions": {
