@@ -65,7 +65,8 @@ contract AtomicSwapEther {
     }
 
     function claim(
-        bytes32 id, bytes32 preimage
+        bytes32 id,
+        bytes32 preimage
     ) external onlyOpenSwaps(id) onlyWithValidPreimage(id, preimage) {
         swaps[id].state = State.CLAIMED;
         swaps[id].preimage = preimage;
@@ -83,7 +84,13 @@ contract AtomicSwapEther {
 
     function viewSwap(
         bytes32 id
-    ) external view onlyExistentSwaps(id) returns (address recipient, bytes32 hash, uint256 timeout, uint256 value, bytes32 preimage) {
+    ) external view onlyExistentSwaps(id) returns (
+        address recipient,
+        bytes32 hash,
+        uint256 timeout,
+        uint256 value,
+        bytes32 preimage
+    ) {
         Swap memory swap = swaps[id];
         return (swap.recipient, swap.hash, swap.timeout, 0, swap.preimage);
     }
