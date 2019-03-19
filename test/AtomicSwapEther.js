@@ -265,6 +265,7 @@ contract("AtomicSwapEther", accounts => {
       await testContract.open(id, recipient, defaultHash, timeout, { from: sender, value: defaultAmount });
 
       const result = await testContract.viewSwap(id);
+      expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout.toNumber()).to.equal(timeout);
@@ -282,6 +283,7 @@ contract("AtomicSwapEther", accounts => {
       await testContract.claim(id, defaultPreimage);
 
       const result = await testContract.viewSwap(id);
+      expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout.toNumber()).to.equal(timeout);
@@ -300,6 +302,7 @@ contract("AtomicSwapEther", accounts => {
       await testContract.abort(id);
 
       const result = await testContract.viewSwap(id);
+      expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout.toNumber()).to.equal(timeout);
