@@ -27,6 +27,7 @@
     "lint:sol": "solhint \"contracts/**/*.sol\"",
     "pretest": "yarn flatten",
     "test": "./scripts/test.sh",
+    "test:property": "./scripts/echidna.sh",
     "verify": "truffle run verify"
   },
   "devDependencies": {
