@@ -42,6 +42,7 @@
     "prettier": "^1.16.4",
     "solhint": "^2.0.0",
     "truffle": "^5.0.8",
-    "truffle-flattener": "webmaster128/truffle-flattener#whitespacing"
+    "truffle-flattener": "webmaster128/truffle-flattener#whitespacing",
+    "truffle-security": "^1.3.1"
   }
 }
