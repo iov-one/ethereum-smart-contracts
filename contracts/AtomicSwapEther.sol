@@ -10,8 +10,10 @@ contract AtomicSwapEther {
 
     struct Swap {
         State state;
-        address recipient;
+        address payable sender;
+        address payable recipient;
         bytes32 hash;
+        uint256 amount;
         uint256 timeout;
         bytes32 preimage;
     }
@@ -55,8 +57,10 @@ contract AtomicSwapEther {
     ) external payable onlyNonExistentSwaps(id) {
         swaps[id] = Swap({
             state: State.OPEN,
+            sender: msg.sender,
             recipient: recipient,
             hash: hash,
+            amount: msg.value,
             timeout: timeout,
             preimage: bytes32(0)
         });
@@ -70,7 +74,10 @@ contract AtomicSwapEther {
     ) external onlyOpenSwaps(id) onlyWithValidPreimage(id, preimage) {
         swaps[id].state = State.CLAIMED;
         swaps[id].preimage = preimage;
-        
+
+        Swap memory swap = swaps[id];
+        swap.recipient.transfer(swap.amount);
+
         emit Claimed(id, preimage);
     }
 
@@ -78,7 +85,10 @@ contract AtomicSwapEther {
         bytes32 id
     ) external onlyOpenSwaps(id) onlyAbortableSwaps(id) {
         swaps[id].state = State.ABORTED;
-        
+
+        Swap memory swap = swaps[id];
+        swap.sender.transfer(swap.amount);
+
         emit Aborted(id);
     }
 
@@ -88,10 +98,10 @@ contract AtomicSwapEther {
         address recipient,
         bytes32 hash,
         uint256 timeout,
-        uint256 value,
+        uint256 amount,
         bytes32 preimage
     ) {
         Swap memory swap = swaps[id];
-        return (swap.recipient, swap.hash, swap.timeout, 0, swap.preimage);
+        return (swap.recipient, swap.hash, swap.timeout, swap.amount, swap.preimage);
     }
 }
