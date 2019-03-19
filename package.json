@@ -16,6 +16,7 @@
   "scripts": {
     "analyze:human": "./scripts/slither.sh",
     "analyze:inheritance": "./scripts/slither-inheritance.sh",
+    "analyze:symbolic": "./scripts/manticore.sh",
     "flatten": "rm -rf ./build/flattened && ./scripts/flatten.sh",
     "prebuild": "yarn flatten",
     "build": "truffle compile",
