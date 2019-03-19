@@ -26,7 +26,8 @@
     "lint:js:fix": "eslint --fix .",
     "lint:sol": "solhint \"contracts/**/*.sol\"",
     "pretest": "yarn flatten",
-    "test": "./scripts/test.sh"
+    "test": "./scripts/test.sh",
+    "verify": "truffle run verify"
   },
   "devDependencies": {
     "@iov/ethereum": "^0.12.3",
