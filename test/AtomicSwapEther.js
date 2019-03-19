@@ -134,7 +134,18 @@ contract("AtomicSwapEther", accounts => {
       );
     });
 
-    it("errors when attempting to claim a swap which has already been aborted");
+    it("errors when attempting to claim a swap which has already been aborted", async () => {
+      const id = makeRandomID()
+      const timeout = makeTimeout(1)
+
+      await testContract.open(id, accounts[0], defaultHash, timeout)
+      await sleep(2)
+      await testContract.abort(id)
+
+      await expect(testContract.claim(id, defaultPreimage)).to.be.rejectedWith(
+        /no open swap found for the given id/i,
+      );
+    });
   });
 
   describe("abort()", () => {
