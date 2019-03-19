@@ -95,6 +95,7 @@ contract AtomicSwapEther {
     function viewSwap(
         bytes32 id
     ) external view onlyExistentSwaps(id) returns (
+        address sender,
         address recipient,
         bytes32 hash,
         uint256 timeout,
@@ -102,6 +103,6 @@ contract AtomicSwapEther {
         bytes32 preimage
     ) {
         Swap memory swap = swaps[id];
-        return (swap.recipient, swap.hash, swap.timeout, swap.amount, swap.preimage);
+        return (swap.sender, swap.recipient, swap.hash, swap.timeout, swap.amount, swap.preimage);
     }
 }
