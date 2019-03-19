@@ -2,7 +2,7 @@ const chai = require("chai");
 const chaiAsPromised = require("chai-as-promised");
 const { expectEvent } = require("openzeppelin-test-helpers");
 
-const { getBalance, makeRandomAddress, makeRandomID, makeTimeout, sleep } = require("./utils");
+const { getBalanceApproximation, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");
 
@@ -23,26 +23,28 @@ contract("AtomicSwapEther", accounts => {
 
   describe("open()", () => {
     it("accepts ether", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const recipient = makeRandomAddress();
       const timeout = makeTimeout();
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(accounts[1]);
+      const initialBalanceContract = await getBalanceApproximation(testContract.address);
+      const initialBalanceSender = await getBalanceApproximation(accounts[1]);
 
       await testContract.open(id, recipient, defaultHash, timeout, {
         from: accounts[1],
         value: defaultAmount,
       });
 
-      await expect(getBalance(testContract.address)).eventually.to.equal(
+      await expect(getBalanceApproximation(testContract.address)).eventually.to.equal(
         initialBalanceContract + defaultAmount,
       );
-      await expect(getBalance(accounts[0])).eventually.to.be.below(initialBalanceSender - defaultAmount);
-      await expect(getBalance(recipient)).eventually.to.equal(0);
+      await expect(getBalanceApproximation(accounts[0])).eventually.to.be.below(
+        initialBalanceSender - defaultAmount,
+      );
+      await expect(getBalanceApproximation(recipient)).eventually.to.equal(0);
     });
 
     it("emits an Opened event", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const recipient = makeRandomAddress();
       const timeout = makeTimeout();
       const { tx } = await testContract.open(id, recipient, defaultHash, timeout);
@@ -55,7 +57,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to open a swap with an existing ID", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
 
       {
         const recipient = makeRandomAddress();
@@ -75,7 +77,7 @@ contract("AtomicSwapEther", accounts => {
 
   describe("claim()", () => {
     it("disburses ether to recipient", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const sender = accounts[1];
       const recipient = accounts[2];
       const timeout = makeTimeout();
@@ -84,21 +86,23 @@ contract("AtomicSwapEther", accounts => {
         from: sender,
         value: defaultAmount,
       });
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(sender);
-      const initialBalanceRecipient = await getBalance(recipient);
+      const initialBalanceContract = await getBalanceApproximation(testContract.address);
+      const initialBalanceSender = await getBalanceApproximation(sender);
+      const initialBalanceRecipient = await getBalanceApproximation(recipient);
 
       await testContract.claim(id, defaultPreimage);
 
-      await expect(getBalance(testContract.address)).eventually.to.equal(
+      await expect(getBalanceApproximation(testContract.address)).eventually.to.equal(
         initialBalanceContract - defaultAmount,
       );
-      await expect(getBalance(sender)).eventually.to.equal(initialBalanceSender);
-      await expect(getBalance(recipient)).eventually.to.equal(initialBalanceRecipient + defaultAmount);
+      await expect(getBalanceApproximation(sender)).eventually.to.equal(initialBalanceSender);
+      await expect(getBalanceApproximation(recipient)).eventually.to.equal(
+        initialBalanceRecipient + defaultAmount,
+      );
     });
 
     it("emits a Claimed event", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -112,7 +116,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to claim a non-existent swap", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
 
       await expect(testContract.claim(id, defaultPreimage)).to.be.rejectedWith(
         /no open swap found for the given id/i,
@@ -121,7 +125,7 @@ contract("AtomicSwapEther", accounts => {
 
     it("errors when attempting to claim a swap with incorrect preimage", async () => {
       const preimage = `0x5${defaultPreimage.slice(3)}`;
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -133,7 +137,7 @@ contract("AtomicSwapEther", accounts => {
       // 31 bytes
       const preimage = "0xa990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
       const hash = "0xe4632a45b8e39230777acdb63647b9513d5686bb4d9cb7a3be2f89664eb0fd32";
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], hash, timeout);
@@ -145,7 +149,7 @@ contract("AtomicSwapEther", accounts => {
       // 33 bytes
       const preimage = "0xa990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
       const hash = "0xe4632a45b8e39230777acdb63647b9513d5686bb4d9cb7a3be2f89664eb0fd32";
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], hash, timeout);
@@ -154,7 +158,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to claim a swap which has already been claimed", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -166,7 +170,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to claim a swap which has already been aborted", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout(1);
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -181,7 +185,7 @@ contract("AtomicSwapEther", accounts => {
 
   describe("abort()", () => {
     it("returns ether to sender", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const sender = accounts[1];
       const recipient = accounts[2];
       const timeout = makeTimeout(1);
@@ -190,22 +194,22 @@ contract("AtomicSwapEther", accounts => {
         from: sender,
         value: defaultAmount,
       });
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(sender);
-      const initialBalanceRecipient = await getBalance(recipient);
+      const initialBalanceContract = await getBalanceApproximation(testContract.address);
+      const initialBalanceSender = await getBalanceApproximation(sender);
+      const initialBalanceRecipient = await getBalanceApproximation(recipient);
 
       await sleep(2);
       await testContract.abort(id);
 
-      await expect(getBalance(testContract.address)).eventually.to.equal(
+      await expect(getBalanceApproximation(testContract.address)).eventually.to.equal(
         initialBalanceContract - defaultAmount,
       );
-      await expect(getBalance(sender)).eventually.to.equal(initialBalanceSender + defaultAmount);
-      await expect(getBalance(recipient)).eventually.to.equal(initialBalanceRecipient);
+      await expect(getBalanceApproximation(sender)).eventually.to.equal(initialBalanceSender + defaultAmount);
+      await expect(getBalanceApproximation(recipient)).eventually.to.equal(initialBalanceRecipient);
     });
 
     it("emits an Aborted event", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout(1);
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -219,13 +223,13 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to abort a non-existent swap", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
 
       await expect(testContract.abort(id)).to.be.rejectedWith(/no open swap found for the given id/i);
     });
 
     it("errors when attempting to abort before the timeout", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout(1e15);
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -234,7 +238,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to abort a swap which has already been claimed", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -244,7 +248,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to abort a swap which has already been aborted", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout(1);
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
@@ -255,16 +259,16 @@ contract("AtomicSwapEther", accounts => {
     });
   });
 
-  describe("viewSwap", () => {
+  describe("get", () => {
     it("shows an open swap by id", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
       const sender = accounts[1];
       const recipient = accounts[2];
 
       await testContract.open(id, recipient, defaultHash, timeout, { from: sender, value: defaultAmount });
 
-      const result = await testContract.viewSwap(id);
+      const result = await testContract.get(id);
       expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
@@ -274,7 +278,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("shows a claimed swap by id including preimage", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout();
       const sender = accounts[1];
       const recipient = accounts[2];
@@ -282,7 +286,7 @@ contract("AtomicSwapEther", accounts => {
       await testContract.open(id, recipient, defaultHash, timeout, { from: sender, value: defaultAmount });
       await testContract.claim(id, defaultPreimage);
 
-      const result = await testContract.viewSwap(id);
+      const result = await testContract.get(id);
       expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
@@ -292,7 +296,7 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("shows an aborted swap by id", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
       const timeout = makeTimeout(1);
       const sender = accounts[1];
       const recipient = accounts[2];
@@ -301,7 +305,7 @@ contract("AtomicSwapEther", accounts => {
       await sleep(2);
       await testContract.abort(id);
 
-      const result = await testContract.viewSwap(id);
+      const result = await testContract.get(id);
       expect(result.sender).to.equal(sender);
       expect(result.recipient).to.equal(recipient);
       expect(result.hash).to.equal(defaultHash);
@@ -311,9 +315,9 @@ contract("AtomicSwapEther", accounts => {
     });
 
     it("errors when attempting to view a non-existent swap", async () => {
-      const id = makeRandomID();
+      const id = makeRandomId();
 
-      await expect(testContract.viewSwap(id)).to.be.rejectedWith(/no swap found for the given id/i);
+      await expect(testContract.get(id)).to.be.rejectedWith(/no swap found for the given id/i);
     });
   });
 });

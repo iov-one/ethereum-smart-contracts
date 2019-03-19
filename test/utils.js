@@ -2,14 +2,15 @@ const crypto = require("crypto");
 const { Algorithm } = require("@iov/bcp-types");
 const { ethereumCodec, EthereumConnection } = require("@iov/ethereum");
 
-async function getBalance(address) {
+async function getBalanceApproximation(address) {
   const connection = await EthereumConnection.establish("http://localhost:7545");
   const account = await connection.getAccount({ address });
-  const balance = account ? account.balance[0].quantity : "0";
+  const ethWallet = account && account.balance.find(({ tokenTicker }) => tokenTicker === "ETH");
+  const balance = ethWallet ? ethWallet.quantity : "0";
   return parseInt(balance, 10);
 }
 
-function makeRandomID() {
+function makeRandomId() {
   return `0x${crypto.randomBytes(32).toString("hex")}`;
 }
 
@@ -34,8 +35,8 @@ async function sleep(seconds) {
 }
 
 module.exports = {
-  getBalance,
-  makeRandomID,
+  getBalanceApproximation,
+  makeRandomId,
   makeRandomAddress,
   makeTimeout,
   sleep,

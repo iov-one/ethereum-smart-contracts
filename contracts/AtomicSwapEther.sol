@@ -92,7 +92,7 @@ contract AtomicSwapEther {
         emit Aborted(id);
     }
 
-    function viewSwap(
+    function get(
         bytes32 id
     ) external view onlyExistentSwaps(id) returns (
         address sender,
