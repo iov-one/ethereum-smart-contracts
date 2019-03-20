@@ -38,5 +38,9 @@
     "solhint": "^2.0.0",
     "truffle": "^5.0.8",
     "truffle-flattener": "webmaster128/truffle-flattener#whitespacing"
+  },
+  "dependencies": {
+    "typescript": "^3.3.4000",
+    "web3x": "^3.0.5"
   }
 }
