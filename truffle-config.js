@@ -93,4 +93,6 @@ module.exports = {
       // }
     },
   },
+
+  contracts_directory: "./build/flattened",
 };
