@@ -14,12 +14,15 @@
     "url": "https://github.com/iov-one/ethereum-smart-contracts/issues"
   },
   "scripts": {
-    "compile": "truffle compile",
+    "flatten": "rm -rf ./build/flattened && ./scripts/flatten.sh",
+    "prebuild": "yarn flatten",
+    "build": "truffle compile",
     "format": "prettier --write --loglevel warn \"./{,migrations,test}/*.{js,json,md}\"",
     "lint": "yarn run lint:js && yarn run lint:sol",
     "lint:js": "eslint .",
     "lint:js:fix": "eslint --fix .",
     "lint:sol": "solhint \"contracts/**/*.sol\"",
+    "pretest": "yarn flatten",
     "test": "./scripts/test.sh"
   },
   "devDependencies": {
@@ -33,6 +36,7 @@
     "openzeppelin-test-helpers": "^0.2.0",
     "prettier": "^1.16.4",
     "solhint": "^2.0.0",
-    "truffle": "^5.0.8"
+    "truffle": "^5.0.8",
+    "truffle-flattener": "webmaster128/truffle-flattener#whitespacing"
   }
 }
