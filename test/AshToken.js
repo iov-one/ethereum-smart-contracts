@@ -153,15 +153,22 @@ contract("AshToken", accounts => {
       await testContract.approve(spender, 5, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await testContract.transferFrom(tokenOwner, recipient, 2);
+      const { tx } = await testContract.transferFrom(tokenOwner, recipient, 4);
+
+      // Transfer event emitted
+      await expectEvent.inTransaction(tx, ashToken, "Transfer", {
+        "0": tokenOwner,
+        "1": recipient,
+        "2": "4",
+      });
 
       // money received
       const balance = await testContract.balanceOf(recipient);
-      expect(balance).to.be.a.bignumber.that.equals("2");
+      expect(balance).to.be.a.bignumber.that.equals("4");
 
       // allowance reduced
       const allowance = await testContract.allowance(tokenOwner, spender);
-      expect(allowance).to.be.a.bignumber.that.equals("3");
+      expect(allowance).to.be.a.bignumber.that.equals("1");
     });
 
     it("cannot transfer more than approved", async () => {
