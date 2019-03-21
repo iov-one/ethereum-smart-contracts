@@ -26,7 +26,6 @@
     "test": "./scripts/test.sh"
   },
   "devDependencies": {
-    "@iov/bcp-types": "^0.12.3",
     "@iov/ethereum": "^0.12.3",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
