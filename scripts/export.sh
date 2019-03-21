@@ -6,7 +6,7 @@ artifacts_dir="build/contracts"
 exports_dir="build/exports"
 mkdir -p "$exports_dir"
 
-# Use source folder to find top leven contracts in artifacts
+# Use source folder to find top level contracts in artifacts
 for inpath in contracts/*.sol; do
   contractName=$(basename "$inpath" .sol)
 
