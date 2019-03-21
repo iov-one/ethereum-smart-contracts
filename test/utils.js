@@ -1,6 +1,5 @@
 const crypto = require("crypto");
-const { Algorithm } = require("@iov/bcp-types");
-const { ethereumCodec, EthereumConnection } = require("@iov/ethereum");
+const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
 
 async function getBalanceApproximation(address) {
   const connection = await EthereumConnection.establish("http://localhost:7545");
@@ -15,14 +14,8 @@ function makeRandomId() {
 }
 
 function makeRandomAddress() {
-  const dataPrefix = 0x04;
-  return ethereumCodec.identityToAddress({
-    chainId: "dummy-chain",
-    pubkey: {
-      algo: Algorithm.Secp256k1,
-      data: new Uint8Array([dataPrefix, ...crypto.randomBytes(64)]),
-    },
-  });
+  const addressLowercase = `0x${crypto.randomBytes(20).toString("hex")}`;
+  return toChecksummedAddress(addressLowercase);
 }
 
 function makeTimeout(seconds = 100) {
