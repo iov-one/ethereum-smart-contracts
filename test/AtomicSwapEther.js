@@ -259,7 +259,7 @@ contract("AtomicSwapEther", accounts => {
     });
   });
 
-  describe("get", () => {
+  describe("get()", () => {
     it("shows an open swap by id", async () => {
       const id = makeRandomId();
       const timeout = makeTimeout();
