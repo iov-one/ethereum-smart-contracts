@@ -67,10 +67,10 @@ contract("AshToken", accounts => {
   });
 
   describe("transfer()", () => {
-    const owner = accounts[0];
+    const tokenOwner = accounts[0];
 
     before(async () => {
-      await testContract.mint(accounts[0], 4);
+      await testContract.mint(tokenOwner, 4);
     });
 
     it("works", async () => {
@@ -79,7 +79,7 @@ contract("AshToken", accounts => {
 
       await expectEvent.inTransaction(tx, ashToken, "Transfer", {
         // Event argument names not standardized across ERC20 implementation. Use names from contract here.
-        from: owner,
+        from: tokenOwner,
         to: recipient,
         value: "4",
       });
@@ -96,18 +96,18 @@ contract("AshToken", accounts => {
 
   describe("allowance()", () => {
     it("has default allowance of 0", async () => {
-      const owner = makeRandomAddress();
+      const tokenOwner = makeRandomAddress();
       const spender = makeRandomAddress();
-      const allowance = await testContract.allowance(owner, spender);
+      const allowance = await testContract.allowance(tokenOwner, spender);
       expect(allowance).to.be.a.bignumber.that.equals("0");
     });
   });
 
   describe("approve()", () => {
-    const owner = accounts[0];
+    const tokenOwner = accounts[0];
 
     before(async () => {
-      await testContract.mint(owner, 3);
+      await testContract.mint(tokenOwner, 3);
     });
 
     it("works", async () => {
@@ -116,12 +116,12 @@ contract("AshToken", accounts => {
 
       await expectEvent.inTransaction(tx, ashToken, "Approval", {
         // Event argument names not standardized across ERC20 implementation. Use names from contract here.
-        owner: owner,
+        owner: tokenOwner,
         spender: spender,
         value: "3",
       });
 
-      const allowance = await testContract.allowance(owner, spender);
+      const allowance = await testContract.allowance(tokenOwner, spender);
       expect(allowance).to.be.a.bignumber.that.equals("3");
     });
 
@@ -129,46 +129,46 @@ contract("AshToken", accounts => {
       const spender = makeRandomAddress();
       await testContract.approve(spender, 3000000);
 
-      const allowance = await testContract.allowance(owner, spender);
+      const allowance = await testContract.allowance(tokenOwner, spender);
       expect(allowance).to.be.a.bignumber.that.equals("3000000");
     });
   });
 
   describe("transferFrom()", () => {
-    const owner = accounts[1];
+    const tokenOwner = accounts[1];
     const spender = accounts[0];
 
     before(async () => {
-      await testContract.mint(owner, 10);
+      await testContract.mint(tokenOwner, 10);
     });
 
     it("works", async () => {
-      await testContract.approve(spender, 5, { from: owner });
+      await testContract.approve(spender, 5, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await testContract.transferFrom(owner, recipient, 2);
+      await testContract.transferFrom(tokenOwner, recipient, 2);
 
       // money received
       const balance = await testContract.balanceOf(recipient);
       expect(balance).to.be.a.bignumber.that.equals("2");
 
       // allowance reduced
-      const allowance = await testContract.allowance(owner, spender);
+      const allowance = await testContract.allowance(tokenOwner, spender);
       expect(allowance).to.be.a.bignumber.that.equals("3");
     });
 
     it("cannot transfer more than approved", async () => {
-      await testContract.approve(spender, 2, { from: owner });
+      await testContract.approve(spender, 2, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await expect(testContract.transferFrom(owner, recipient, 5)).to.be.rejectedWith(/revert/i);
+      await expect(testContract.transferFrom(tokenOwner, recipient, 5)).to.be.rejectedWith(/revert/i);
     });
 
     it("cannot transfer more than balance", async () => {
-      await testContract.approve(spender, 1000000, { from: owner });
+      await testContract.approve(spender, 1000000, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await expect(testContract.transferFrom(owner, recipient, 500)).to.be.rejectedWith(/revert/i);
+      await expect(testContract.transferFrom(tokenOwner, recipient, 500)).to.be.rejectedWith(/revert/i);
     });
   });
 });
