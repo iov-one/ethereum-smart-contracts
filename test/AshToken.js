@@ -11,6 +11,7 @@ const ashToken = artifacts.require("./AshToken.sol");
 const { makeRandomAddress } = require("./utils");
 
 contract("AshToken", accounts => {
+  const minter = accounts[0];
   let testContract;
 
   before(async () => {
@@ -56,7 +57,7 @@ contract("AshToken", accounts => {
   describe("mint()", () => {
     it("works", async () => {
       const address = makeRandomAddress();
-      await testContract.mint(address, 7);
+      await testContract.mint(address, 7, { from: minter });
 
       const balance = await testContract.balanceOf(address);
       expect(balance).to.be.a.bignumber.that.equals("7");
@@ -64,13 +65,19 @@ contract("AshToken", accounts => {
       const totalSupply = await testContract.totalSupply();
       expect(totalSupply).to.be.a.bignumber.that.equals("7");
     });
+
+    it("fails for non-minter", async () => {
+      const nonMinter = accounts[1];
+      const address = makeRandomAddress();
+      await expect(testContract.mint(address, 7, { from: nonMinter })).to.be.rejectedWith(/revert/i);
+    });
   });
 
   describe("transfer()", () => {
     const tokenOwner = accounts[0];
 
     before(async () => {
-      await testContract.mint(tokenOwner, 4);
+      await testContract.mint(tokenOwner, 4, { from: minter });
     });
 
     it("works", async () => {
@@ -107,7 +114,7 @@ contract("AshToken", accounts => {
     const tokenOwner = accounts[0];
 
     before(async () => {
-      await testContract.mint(tokenOwner, 3);
+      await testContract.mint(tokenOwner, 3, { from: minter });
     });
 
     it("works", async () => {
@@ -139,7 +146,7 @@ contract("AshToken", accounts => {
     const spender = accounts[0];
 
     before(async () => {
-      await testContract.mint(tokenOwner, 10);
+      await testContract.mint(tokenOwner, 10, { from: minter });
     });
 
     it("works", async () => {
