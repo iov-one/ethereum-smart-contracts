@@ -4,6 +4,7 @@ const { expect } = chai;
 chai.use(chaiAsPromised);
 const BN = require("bn.js");
 chai.use(require("chai-bn")(BN));
+const { expectEvent } = require("openzeppelin-test-helpers");
 
 const ashToken = artifacts.require("./AshToken.sol");
 
@@ -66,13 +67,22 @@ contract("AshToken", accounts => {
   });
 
   describe("transfer()", () => {
+    const owner = accounts[0];
+
     before(async () => {
       await testContract.mint(accounts[0], 4);
     });
 
     it("works", async () => {
       const recipient = makeRandomAddress();
-      await testContract.transfer(recipient, 4);
+      const { tx } = await testContract.transfer(recipient, 4);
+
+      await expectEvent.inTransaction(tx, ashToken, "Transfer", {
+        // Event argument names not standardized across ERC20 implementation. Use names from contract here.
+        from: owner,
+        to: recipient,
+        value: "4",
+      });
 
       const balance = await testContract.balanceOf(recipient);
       expect(balance).to.be.a.bignumber.that.equals("4");
@@ -102,7 +112,14 @@ contract("AshToken", accounts => {
 
     it("works", async () => {
       const spender = makeRandomAddress();
-      await testContract.approve(spender, 3);
+      const { tx } = await testContract.approve(spender, 3);
+
+      await expectEvent.inTransaction(tx, ashToken, "Approval", {
+        // Event argument names not standardized across ERC20 implementation. Use names from contract here.
+        owner: owner,
+        spender: spender,
+        value: "3",
+      });
 
       const allowance = await testContract.allowance(owner, spender);
       expect(allowance).to.be.a.bignumber.that.equals("3");
