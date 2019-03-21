@@ -143,7 +143,7 @@ contract("AshToken", accounts => {
 
   describe("transferFrom()", () => {
     const tokenOwner = accounts[1];
-    const spender = accounts[0];
+    const spender = accounts[2];
 
     before(async () => {
       await testContract.mint(tokenOwner, 10, { from: minter });
@@ -153,7 +153,7 @@ contract("AshToken", accounts => {
       await testContract.approve(spender, 5, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      const { tx } = await testContract.transferFrom(tokenOwner, recipient, 4);
+      const { tx } = await testContract.transferFrom(tokenOwner, recipient, 4, { from: spender });
 
       // Transfer event emitted
       await expectEvent.inTransaction(tx, ashToken, "Transfer", {
@@ -175,14 +175,18 @@ contract("AshToken", accounts => {
       await testContract.approve(spender, 2, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await expect(testContract.transferFrom(tokenOwner, recipient, 5)).to.be.rejectedWith(/revert/i);
+      await expect(testContract.transferFrom(tokenOwner, recipient, 5, { from: spender })).to.be.rejectedWith(
+        /revert/i,
+      );
     });
 
     it("cannot transfer more than balance", async () => {
       await testContract.approve(spender, 1000000, { from: tokenOwner });
 
       const recipient = makeRandomAddress();
-      await expect(testContract.transferFrom(tokenOwner, recipient, 500)).to.be.rejectedWith(/revert/i);
+      await expect(
+        testContract.transferFrom(tokenOwner, recipient, 500, { from: spender }),
+      ).to.be.rejectedWith(/revert/i);
     });
   });
 });
