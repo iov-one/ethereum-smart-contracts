@@ -17,6 +17,7 @@
     "flatten": "rm -rf ./build/flattened && ./scripts/flatten.sh",
     "prebuild": "yarn flatten",
     "build": "truffle compile",
+    "postbuild": "rm -rf ./build/exports && ./scripts/export.sh",
     "format": "prettier --write --loglevel warn \"./{,migrations,test}/*.{js,json,md}\"",
     "lint": "yarn run lint:js && yarn run lint:sol",
     "lint:js": "eslint .",
