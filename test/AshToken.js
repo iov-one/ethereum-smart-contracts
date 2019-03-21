@@ -9,7 +9,7 @@ const ashToken = artifacts.require("./AshToken.sol");
 
 const { makeRandomAddress } = require("./utils");
 
-contract("AshToken", () => {
+contract("AshToken", accounts => {
   let testContract;
 
   before(async () => {
@@ -62,6 +62,96 @@ contract("AshToken", () => {
 
       const totalSupply = await testContract.totalSupply();
       expect(totalSupply).to.be.a.bignumber.that.equals("7");
+    });
+  });
+
+  describe("transfer()", () => {
+    before(async () => {
+      await testContract.mint(accounts[0], 4);
+    });
+
+    it("works", async () => {
+      const recipient = makeRandomAddress();
+      await testContract.transfer(recipient, 4);
+
+      const balance = await testContract.balanceOf(recipient);
+      expect(balance).to.be.a.bignumber.that.equals("4");
+    });
+
+    it("fails for insufficient balance", async () => {
+      const recipient = makeRandomAddress();
+      await expect(testContract.transfer(recipient, 3000000)).to.be.rejectedWith(/revert/i);
+    });
+  });
+
+  describe("allowance()", () => {
+    it("has default allowance of 0", async () => {
+      const owner = makeRandomAddress();
+      const spender = makeRandomAddress();
+      const allowance = await testContract.allowance(owner, spender);
+      expect(allowance).to.be.a.bignumber.that.equals("0");
+    });
+  });
+
+  describe("approve()", () => {
+    const owner = accounts[0];
+
+    before(async () => {
+      await testContract.mint(owner, 3);
+    });
+
+    it("works", async () => {
+      const spender = makeRandomAddress();
+      await testContract.approve(spender, 3);
+
+      const allowance = await testContract.allowance(owner, spender);
+      expect(allowance).to.be.a.bignumber.that.equals("3");
+    });
+
+    it("works for approval greater than balance", async () => {
+      const spender = makeRandomAddress();
+      await testContract.approve(spender, 3000000);
+
+      const allowance = await testContract.allowance(owner, spender);
+      expect(allowance).to.be.a.bignumber.that.equals("3000000");
+    });
+  });
+
+  describe("transferFrom()", () => {
+    const owner = accounts[1];
+    const spender = accounts[0];
+
+    before(async () => {
+      await testContract.mint(owner, 10);
+    });
+
+    it("works", async () => {
+      await testContract.approve(spender, 5, { from: owner });
+
+      const recipient = makeRandomAddress();
+      await testContract.transferFrom(owner, recipient, 2);
+
+      // money received
+      const balance = await testContract.balanceOf(recipient);
+      expect(balance).to.be.a.bignumber.that.equals("2");
+
+      // allowance reduced
+      const allowance = await testContract.allowance(owner, spender);
+      expect(allowance).to.be.a.bignumber.that.equals("3");
+    });
+
+    it("cannot transfer more than approved", async () => {
+      await testContract.approve(spender, 2, { from: owner });
+
+      const recipient = makeRandomAddress();
+      await expect(testContract.transferFrom(owner, recipient, 5)).to.be.rejectedWith(/revert/i);
+    });
+
+    it("cannot transfer more than balance", async () => {
+      await testContract.approve(spender, 1000000, { from: owner });
+
+      const recipient = makeRandomAddress();
+      await expect(testContract.transferFrom(owner, recipient, 500)).to.be.rejectedWith(/revert/i);
     });
   });
 });
