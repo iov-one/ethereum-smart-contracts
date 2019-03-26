@@ -1,13 +1,7 @@
-const chai = require("chai");
-const chaiAsPromised = require("chai-as-promised");
-const { expectEvent } = require("openzeppelin-test-helpers");
-
+const { expect, expectEvent } = require('./setup');
 const { getBalanceApproximation, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");
-
-const { expect } = chai;
-chai.use(chaiAsPromised);
 
 contract("AtomicSwapEther", accounts => {
   const defaultPreimage = "0x42a990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
