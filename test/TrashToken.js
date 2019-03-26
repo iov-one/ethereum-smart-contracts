@@ -1,14 +1,7 @@
-const chai = require("chai");
-const chaiAsPromised = require("chai-as-promised");
-const { expect } = chai;
-chai.use(chaiAsPromised);
-const BN = require("bn.js");
-chai.use(require("chai-bn")(BN));
-const { expectEvent } = require("openzeppelin-test-helpers");
+const { expect, expectEvent } = require("./setup");
+const { makeRandomAddress } = require("./utils");
 
 const trashToken = artifacts.require("./TrashToken.sol");
-
-const { makeRandomAddress } = require("./utils");
 
 contract("TrashToken", accounts => {
   const minter = accounts[0];
