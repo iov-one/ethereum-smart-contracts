@@ -19,10 +19,7 @@ script: ./scripts/ci/main.sh
 
 # whitelist long living branches to avoid testing feature branches twice (as branch and as pull request)
 branches:
-  only:
-  - master
-  # Minor version branches: 0.9, 0.10 etc.
-  - /^0\.[0-9]+$/
+  only: master
 
 notifications:
   email: false
