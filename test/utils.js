@@ -2,7 +2,7 @@ const crypto = require("crypto");
 const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
 
 async function getBalanceApproximation(address) {
-  const connection = await EthereumConnection.establish("http://localhost:7545");
+  const connection = await EthereumConnection.establish("http://localhost:8545");
   const account = await connection.getAccount({ address });
   const ethWallet = account && account.balance.find(({ tokenTicker }) => tokenTicker === "ETH");
   const balance = ethWallet ? ethWallet.quantity : "0";
