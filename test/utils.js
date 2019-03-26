@@ -1,12 +1,13 @@
+const BN = require('bn.js');
 const crypto = require("crypto");
 const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
 
-async function getBalanceApproximation(address) {
+async function getBalance(address) {
   const connection = await EthereumConnection.establish("http://localhost:8545");
   const account = await connection.getAccount({ address });
   const ethWallet = account && account.balance.find(({ tokenTicker }) => tokenTicker === "ETH");
   const balance = ethWallet ? ethWallet.quantity : "0";
-  return parseInt(balance, 10);
+  return new BN(balance, 10);
 }
 
 function makeRandomId() {
@@ -18,9 +19,10 @@ function makeRandomAddress() {
   return toChecksummedAddress(addressLowercase);
 }
 
-function makeTimeout(seconds = 100) {
-  const currentUnixTimestamp = Math.floor(Date.now() / 1000);
-  return currentUnixTimestamp + seconds;
+async function makeTimeout(blocks = 2) {
+  const connection = await EthereumConnection.establish("http://localhost:8545");
+  const currentHeight = await connection.height();
+  return currentHeight + blocks;
 }
 
 async function sleep(seconds) {
@@ -28,7 +30,7 @@ async function sleep(seconds) {
 }
 
 module.exports = {
-  getBalanceApproximation,
+  getBalance,
   makeRandomId,
   makeRandomAddress,
   makeTimeout,
