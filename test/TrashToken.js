@@ -1,34 +1,27 @@
 const { expect, expectEvent } = require("./setup");
 const { makeRandomAddress } = require("./utils");
 
-const ashToken = artifacts.require("./AshToken.sol");
+const trashToken = artifacts.require("./TrashToken.sol");
 
-contract("AshToken", accounts => {
+contract("TrashToken", accounts => {
   const minter = accounts[0];
   let testContract;
 
   before(async () => {
-    testContract = await ashToken.deployed();
+    testContract = await trashToken.deployed();
   });
 
-  describe("decimals()", () => {
-    it("has 12 decimals", async () => {
-      const result = await testContract.decimals();
-      expect(result).to.be.a.bignumber.that.equals("12");
+  describe("decimals(), symbol(), name()", () => {
+    it("has no decimals function", () => {
+      expect(testContract.decimals).to.be.undefined;
     });
-  });
 
-  describe("symbol()", () => {
-    it("has symbol ASH", async () => {
-      const result = await testContract.symbol();
-      expect(result).to.eql("ASH");
+    it("has no symbol function", () => {
+      expect(testContract.symbol).to.be.undefined;
     });
-  });
 
-  describe("name()", () => {
-    it("has name Ash Token", async () => {
-      const result = await testContract.name();
-      expect(result).to.eql("Ash Token");
+    it("has no name function", () => {
+      expect(testContract.name).to.be.undefined;
     });
   });
 
@@ -77,7 +70,7 @@ contract("AshToken", accounts => {
       const recipient = makeRandomAddress();
       const { tx } = await testContract.transfer(recipient, 4, { from: tokenOwner });
 
-      await expectEvent.inTransaction(tx, ashToken, "Transfer", {
+      await expectEvent.inTransaction(tx, trashToken, "Transfer", {
         // Event argument names not standardized across ERC20 implementation. Use names from contract here.
         from: tokenOwner,
         to: recipient,
@@ -114,7 +107,7 @@ contract("AshToken", accounts => {
       const spender = makeRandomAddress();
       const { tx } = await testContract.approve(spender, 3);
 
-      await expectEvent.inTransaction(tx, ashToken, "Approval", {
+      await expectEvent.inTransaction(tx, trashToken, "Approval", {
         // Event argument names not standardized across ERC20 implementation. Use names from contract here.
         owner: tokenOwner,
         spender: spender,
@@ -149,7 +142,7 @@ contract("AshToken", accounts => {
       const { tx } = await testContract.transferFrom(tokenOwner, recipient, 4, { from: spender });
 
       // Transfer event emitted
-      await expectEvent.inTransaction(tx, ashToken, "Transfer", {
+      await expectEvent.inTransaction(tx, trashToken, "Transfer", {
         "0": tokenOwner,
         "1": recipient,
         "2": "4",

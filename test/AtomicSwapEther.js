@@ -1,4 +1,4 @@
-const { expect, expectEvent } = require('./setup');
+const { expect, expectEvent } = require("./setup");
 const { getBalanceApproximation, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");

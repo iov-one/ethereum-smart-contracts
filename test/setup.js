@@ -10,4 +10,4 @@ chai.use(chaiAsPromised);
 module.exports = {
   expect,
   expectEvent,
-}
+};
