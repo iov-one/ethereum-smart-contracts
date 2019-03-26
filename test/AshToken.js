@@ -75,7 +75,7 @@ contract("AshToken", accounts => {
 
     it("works", async () => {
       const recipient = makeRandomAddress();
-      const { tx } = await testContract.transfer(recipient, 4);
+      const { tx } = await testContract.transfer(recipient, 4, { from: tokenOwner });
 
       await expectEvent.inTransaction(tx, ashToken, "Transfer", {
         // Event argument names not standardized across ERC20 implementation. Use names from contract here.
