@@ -226,7 +226,7 @@ contract("AtomicSwapEther", accounts => {
 
     it("errors when attempting to abort before the timeout", async () => {
       const id = makeRandomId();
-      const timeout = await makeTimeout(1e15);
+      const timeout = await makeTimeout(1e5);
 
       await testContract.open(id, accounts[0], defaultHash, timeout);
 

@@ -45,7 +45,7 @@ contract AtomicSwapEther {
     }
 
     modifier onlyAbortableSwaps(bytes32 id) {
-        require(now >= swaps[id].timeout, "Swap timeout has not been reached");
+        require(block.number >= swaps[id].timeout, "Swap timeout has not been reached");
         _;
     }
 
