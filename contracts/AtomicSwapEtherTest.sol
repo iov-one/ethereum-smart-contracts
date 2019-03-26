@@ -3,9 +3,9 @@ pragma solidity ^0.5.2;
 import "./AtomicSwapEther.sol";
 
 contract AtomicSwapEtherTest is AtomicSwapEther {
-    bytes32 openID;
-    bytes32 claimedID;
-    bytes32 abortedID;
+    bytes32 private openID;
+    bytes32 private claimedID;
+    bytes32 private abortedID;
 
     // Override parent because private and we need access here
     mapping (bytes32 => Swap) private swaps;
