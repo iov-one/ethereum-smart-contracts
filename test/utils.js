@@ -1,8 +1,11 @@
 const BN = require("bn.js");
 const crypto = require("crypto");
 const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
+const { networks } = require("../truffle-config");
 
-const TEST_URL = "http://localhost:8545";
+const { host, port } = networks.test;
+
+const TEST_URL = `http://${host}:${port}`;
 
 async function getBalance(address) {
   const connection = await EthereumConnection.establish(TEST_URL);
