@@ -1,4 +1,4 @@
-const BN = require('bn.js')
+const BN = require("bn.js");
 const { expect, expectEvent } = require("./setup");
 const { getBalance, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
 
@@ -8,7 +8,7 @@ contract("AtomicSwapEther", accounts => {
   const defaultPreimage = "0x42a990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
   const defaultHash = "0x261c74f7dd1ed6a069e18375ab2bee9afcb1095613f53b07de11829ac66cdfcc";
   const nullPreimage = "0x0000000000000000000000000000000000000000000000000000000000000000";
-  const defaultAmount = '50000000';
+  const defaultAmount = "50000000";
   const defaultAmountBN = new BN(defaultAmount);
 
   let testContract;
@@ -90,11 +90,11 @@ contract("AtomicSwapEther", accounts => {
 
       await expect(getBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),
-        );
+      );
       await expect(getBalance(sender)).eventually.to.be.a.bignumber.that.equals(initialBalanceSender);
       await expect(getBalance(recipient)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceRecipient.add(defaultAmountBN),
-        );
+      );
     });
 
     it("emits a Claimed event", async () => {
@@ -200,7 +200,9 @@ contract("AtomicSwapEther", accounts => {
       await expect(getBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),
       );
-      await expect(getBalance(sender)).eventually.to.be.a.bignumber.that.equals(initialBalanceSender.add(defaultAmountBN));
+      await expect(getBalance(sender)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceSender.add(defaultAmountBN),
+      );
       await expect(getBalance(recipient)).eventually.to.be.a.bignumber.that.equals(initialBalanceRecipient);
     });
 

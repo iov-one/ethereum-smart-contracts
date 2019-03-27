@@ -1,4 +1,4 @@
-const BN = require('bn.js');
+const BN = require("bn.js");
 const crypto = require("crypto");
 const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
 
