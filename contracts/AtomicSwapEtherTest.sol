@@ -55,6 +55,11 @@ contract AtomicSwapEtherTest is AtomicSwapEther {
         return swap.state != State.CLAIMED || swap.hash == sha256(abi.encodePacked(swap.preimage));
     }
 
+    function echidna_open_never_aborted_before_timeout() public view returns(bool) {
+        Swap memory swap = swaps[openID];
+        return swap.state != State.ABORTED || block.number >= swap.timeout;
+    }
+
     function echidna_claimed_never_nonexistent() public view returns(bool) {
         return swaps[claimedID].state != State.NON_EXISTENT;
     }

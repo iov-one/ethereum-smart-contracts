@@ -8,7 +8,7 @@ command -v shellcheck > /dev/null && shellcheck "$0"
 trap cleanup EXIT
 
 ganache_pid=""
-ganache_port=8545
+port=7545
 
 cleanup() {
   # Kill the ganache instance that we started (if we started one and if it's still running).
@@ -18,7 +18,7 @@ cleanup() {
 }
 
 ganache_is_running() {
-  nc -z localhost "$ganache_port"
+  nc -z localhost "$port"
 }
 
 start_ganache() {
@@ -35,9 +35,9 @@ start_ganache() {
     "--account=0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501208,1000000000000000000000000"
     "--account=0x2bdd21761a483f71054e14f5b827213567971c676928d9a1808cbfa4b7501209,1000000000000000000000000"
   )
-  ganache-cli --gasLimit 0xfffffffffff "${accounts[@]}" > /dev/null &
+  ganache-cli --port "$port" --gasLimit 0xfffffffffff --blockTime 1 "${accounts[@]}" > /dev/null &
   ganache_pid=$!
-  echo "Started a new ganache instance with pid $ganache_pid"
+  echo "Started a new ganache instance on port $port with pid $ganache_pid"
 }
 
 if ganache_is_running; then
@@ -47,4 +47,4 @@ else
   start_ganache
 fi
 
-yarn run truffle test "$@"
+yarn run truffle test --network test "$@"

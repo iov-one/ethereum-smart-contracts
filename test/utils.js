@@ -1,12 +1,20 @@
+const BN = require("bn.js");
 const crypto = require("crypto");
 const { EthereumConnection, toChecksummedAddress } = require("@iov/ethereum");
+const { networks } = require("../truffle-config");
 
-async function getBalanceApproximation(address) {
-  const connection = await EthereumConnection.establish("http://localhost:7545");
+const { host, port } = networks.test;
+
+const TEST_URL = `http://${host}:${port}`;
+
+async function getBalance(address) {
+  const connection = await EthereumConnection.establish(TEST_URL);
   const account = await connection.getAccount({ address });
+  connection.disconnect();
+
   const ethWallet = account && account.balance.find(({ tokenTicker }) => tokenTicker === "ETH");
   const balance = ethWallet ? ethWallet.quantity : "0";
-  return parseInt(balance, 10);
+  return new BN(balance, 10);
 }
 
 function makeRandomId() {
@@ -18,9 +26,12 @@ function makeRandomAddress() {
   return toChecksummedAddress(addressLowercase);
 }
 
-function makeTimeout(seconds = 100) {
-  const currentUnixTimestamp = Math.floor(Date.now() / 1000);
-  return currentUnixTimestamp + seconds;
+async function makeTimeout(blocks = 2) {
+  const connection = await EthereumConnection.establish(TEST_URL);
+  const currentHeight = await connection.height();
+  connection.disconnect();
+
+  return currentHeight + blocks;
 }
 
 async function sleep(seconds) {
@@ -28,7 +39,7 @@ async function sleep(seconds) {
 }
 
 module.exports = {
-  getBalanceApproximation,
+  getBalance,
   makeRandomId,
   makeRandomAddress,
   makeTimeout,
