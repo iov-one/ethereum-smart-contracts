@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const { expect, expectEvent } = require("./setup");
-const { getBalance, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
+const { getEthBalance, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");
 
@@ -22,21 +22,21 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const recipient = makeRandomAddress();
       const timeout = await makeTimeout();
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(accounts[1]);
+      const initialBalanceContract = await getEthBalance(testContract.address);
+      const initialBalanceSender = await getEthBalance(accounts[1]);
 
       await testContract.open(id, recipient, defaultHash, timeout, {
         from: accounts[1],
         value: defaultAmount,
       });
 
-      await expect(getBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
+      await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.add(defaultAmountBN),
       );
-      await expect(getBalance(accounts[0])).eventually.to.be.a.bignumber.below(
+      await expect(getEthBalance(accounts[0])).eventually.to.be.a.bignumber.below(
         initialBalanceSender.sub(defaultAmountBN),
       );
-      await expect(getBalance(recipient)).eventually.to.be.a.bignumber.that.is.zero;
+      await expect(getEthBalance(recipient)).eventually.to.be.a.bignumber.that.is.zero;
     });
 
     it("emits an Opened event", async () => {
@@ -82,17 +82,17 @@ contract("AtomicSwapEther", accounts => {
         from: sender,
         value: defaultAmount,
       });
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(sender);
-      const initialBalanceRecipient = await getBalance(recipient);
+      const initialBalanceContract = await getEthBalance(testContract.address);
+      const initialBalanceSender = await getEthBalance(sender);
+      const initialBalanceRecipient = await getEthBalance(recipient);
 
       await testContract.claim(id, defaultPreimage);
 
-      await expect(getBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
+      await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),
       );
-      await expect(getBalance(sender)).eventually.to.be.a.bignumber.that.equals(initialBalanceSender);
-      await expect(getBalance(recipient)).eventually.to.be.a.bignumber.that.equals(
+      await expect(getEthBalance(sender)).eventually.to.be.a.bignumber.that.equals(initialBalanceSender);
+      await expect(getEthBalance(recipient)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceRecipient.add(defaultAmountBN),
       );
     });
@@ -191,19 +191,21 @@ contract("AtomicSwapEther", accounts => {
         value: defaultAmount,
       });
       await sleep(2);
-      const initialBalanceContract = await getBalance(testContract.address);
-      const initialBalanceSender = await getBalance(sender);
-      const initialBalanceRecipient = await getBalance(recipient);
+      const initialBalanceContract = await getEthBalance(testContract.address);
+      const initialBalanceSender = await getEthBalance(sender);
+      const initialBalanceRecipient = await getEthBalance(recipient);
 
       await testContract.abort(id);
 
-      await expect(getBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
+      await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),
       );
-      await expect(getBalance(sender)).eventually.to.be.a.bignumber.that.equals(
+      await expect(getEthBalance(sender)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceSender.add(defaultAmountBN),
       );
-      await expect(getBalance(recipient)).eventually.to.be.a.bignumber.that.equals(initialBalanceRecipient);
+      await expect(getEthBalance(recipient)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceRecipient,
+      );
     });
 
     it("emits an Aborted event", async () => {

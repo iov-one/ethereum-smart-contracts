@@ -7,7 +7,7 @@ const { host, port } = networks.test;
 
 const TEST_URL = `http://${host}:${port}`;
 
-async function getBalance(address) {
+async function getEthBalance(address) {
   const connection = await EthereumConnection.establish(TEST_URL);
   const account = await connection.getAccount({ address });
   connection.disconnect();
@@ -39,7 +39,7 @@ async function sleep(seconds) {
 }
 
 module.exports = {
-  getBalance,
+  getEthBalance,
   makeRandomId,
   makeRandomAddress,
   makeTimeout,
