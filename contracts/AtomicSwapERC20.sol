@@ -61,7 +61,7 @@ contract AtomicSwapERC20 {
         uint256 amount
     ) external onlyNonExistentSwaps(id) {
         ERC20 erc20Contract = ERC20(erc20ContractAddress);
-        erc20Contract.transferFrom(msg.sender, address(this), amount);
+        require(erc20Contract.transferFrom(msg.sender, address(this), amount), "ERC20 token transfer was unsuccessful");
 
         swaps[id] = Swap({
             state: State.OPEN,
@@ -86,7 +86,7 @@ contract AtomicSwapERC20 {
 
         Swap memory swap = swaps[id];
         ERC20 erc20Contract = ERC20(swap.erc20ContractAddress);
-        erc20Contract.transfer(swap.recipient, swap.amount);
+        require(erc20Contract.transfer(swap.recipient, swap.amount), "ERC20 token transfer was unsuccessful");
 
         emit Claimed(id, preimage);
     }
@@ -98,7 +98,7 @@ contract AtomicSwapERC20 {
 
         Swap memory swap = swaps[id];
         ERC20 erc20Contract = ERC20(swap.erc20ContractAddress);
-        erc20Contract.transfer(swap.sender, swap.amount);
+        require(erc20Contract.transfer(swap.sender, swap.amount), "ERC20 token transfer was unsuccessful");
 
         emit Aborted(id);
     }
