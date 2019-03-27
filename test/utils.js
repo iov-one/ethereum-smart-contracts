@@ -7,6 +7,10 @@ const { host, port } = networks.test;
 
 const TEST_URL = `http://${host}:${port}`;
 
+async function getErc20Balance(contract, address) {
+  return contract.balanceOf(address);
+}
+
 async function getEthBalance(address) {
   const connection = await EthereumConnection.establish(TEST_URL);
   const account = await connection.getAccount({ address });
@@ -39,6 +43,7 @@ async function sleep(seconds) {
 }
 
 module.exports = {
+  getErc20Balance,
   getEthBalance,
   makeRandomId,
   makeRandomAddress,
