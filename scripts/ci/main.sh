@@ -26,6 +26,8 @@ fold_start "test"
 yarn run test
 fold_end
 
-fold_start "verify"
-yarn run verify --no-progress
-fold_end
+# Requires an authenticated MythX account or risk rate limiting
+# See https://github.com/ConsenSys/truffle-security#configuration
+# fold_start "verify"
+# yarn run verify --no-progress
+# fold_end
