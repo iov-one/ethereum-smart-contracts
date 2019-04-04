@@ -100,9 +100,18 @@ contract AtomicSwapEther {
         bytes32 hash,
         uint256 timeout,
         uint256 amount,
-        bytes32 preimage
+        bytes32 preimage,
+        State state
     ) {
         Swap memory swap = swaps[id];
-        return (swap.sender, swap.recipient, swap.hash, swap.timeout, swap.amount, swap.preimage);
+        return (
+            swap.sender,
+            swap.recipient,
+            swap.hash,
+            swap.timeout,
+            swap.amount,
+            swap.preimage,
+            swap.state
+        );
     }
 }

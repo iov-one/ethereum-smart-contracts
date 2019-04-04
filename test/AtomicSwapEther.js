@@ -290,6 +290,7 @@ contract("AtomicSwapEther", accounts => {
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
       expect(result.preimage).to.equal(nullPreimage);
+      expect(result.state).to.be.a.bignumber.that.equals(new BN(1));
     });
 
     it("shows a claimed swap by id including preimage", async () => {
@@ -309,6 +310,7 @@ contract("AtomicSwapEther", accounts => {
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
       expect(result.preimage).to.equal(defaultPreimage);
+      expect(result.state).to.be.a.bignumber.that.equals(new BN(2));
     });
 
     it("shows an aborted swap by id", async () => {
@@ -329,6 +331,7 @@ contract("AtomicSwapEther", accounts => {
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
       expect(result.preimage).to.equal(nullPreimage);
+      expect(result.state).to.be.a.bignumber.that.equals(new BN(3));
     });
 
     it("errors when attempting to view a non-existent swap", async () => {
