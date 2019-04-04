@@ -241,6 +241,25 @@ contract("AtomicSwapERC20", accounts => {
       );
     });
 
+    it("errors when attempting to claim a swap after the timeout", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(
+        id,
+        defaultRecipient,
+        defaultHash,
+        timeout,
+        erc20Contract.address,
+        defaultAmount,
+        { from: defaultSender },
+      );
+
+      await expect(testContract.claim(id, defaultPreimage, { from: defaultSender })).to.be.rejectedWith(
+        /swap timeout has been reached/i,
+      );
+    });
+
     it("errors when attempting to claim a swap which has already been claimed", async () => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
