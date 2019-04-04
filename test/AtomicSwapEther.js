@@ -163,6 +163,16 @@ contract("AtomicSwapEther", accounts => {
       );
     });
 
+    it("errors when attempting to claim a swap after the timeout", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
+      await sleep(2);
+
+      await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(/swap timeout has been reached/i);
+    });
+
     it("errors when attempting to claim a swap which has already been claimed", async () => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
@@ -240,7 +250,7 @@ contract("AtomicSwapEther", accounts => {
 
     it("errors when attempting to abort before the timeout", async () => {
       const id = makeRandomId();
-      const timeout = await makeTimeout(1e5);
+      const timeout = await makeTimeout();
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
 
