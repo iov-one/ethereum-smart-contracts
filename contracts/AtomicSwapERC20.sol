@@ -112,6 +112,7 @@ contract AtomicSwapERC20 {
         uint256 timeout,
         uint256 amount,
         bytes32 preimage,
+        State state,
         address erc20ContractAddress
     ) {
         Swap memory swap = swaps[id];
@@ -122,6 +123,7 @@ contract AtomicSwapERC20 {
             swap.timeout,
             swap.amount,
             swap.preimage,
+            swap.state,
             swap.erc20ContractAddress
         );
     }
