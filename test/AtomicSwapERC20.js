@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const { expect, expectEvent } = require("./setup");
-const { getErc20Balance, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
+const { getErc20Balance, makeRandomAddress, makeRandomId, makeTimeout } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapERC20.sol");
 const erc20 = artifacts.require("./AshToken.sol");
@@ -241,6 +241,25 @@ contract("AtomicSwapERC20", accounts => {
       );
     });
 
+    it("errors when attempting to claim a swap after the timeout", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(
+        id,
+        defaultRecipient,
+        defaultHash,
+        timeout,
+        erc20Contract.address,
+        defaultAmount,
+        { from: defaultSender },
+      );
+
+      await expect(testContract.claim(id, defaultPreimage, { from: defaultSender })).to.be.rejectedWith(
+        /swap timeout has been reached/i,
+      );
+    });
+
     it("errors when attempting to claim a swap which has already been claimed", async () => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
@@ -278,7 +297,6 @@ contract("AtomicSwapERC20", accounts => {
           from: defaultSender,
         },
       );
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(
@@ -307,7 +325,6 @@ contract("AtomicSwapERC20", accounts => {
           from: defaultSender,
         },
       );
-      await sleep(2);
       const initialBalanceContract = await getErc20Balance(erc20Contract, testContract.address);
       const initialBalanceSender = await getErc20Balance(erc20Contract, defaultSender);
       const initialBalanceRecipient = await getErc20Balance(erc20Contract, defaultRecipient);
@@ -338,7 +355,6 @@ contract("AtomicSwapERC20", accounts => {
         defaultAmount,
         { from: defaultSender },
       );
-      await sleep(2);
 
       const { tx } = await testContract.abort(id, { from: defaultSender });
 
@@ -407,7 +423,6 @@ contract("AtomicSwapERC20", accounts => {
         defaultAmount,
         { from: defaultSender },
       );
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       await expect(testContract.abort(id, { from: defaultSender })).to.be.rejectedWith(
@@ -485,7 +500,6 @@ contract("AtomicSwapERC20", accounts => {
         defaultAmount,
         { from: defaultSender },
       );
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       const result = await testContract.get(id);

@@ -30,7 +30,7 @@ function makeRandomAddress() {
   return toChecksummedAddress(addressLowercase);
 }
 
-async function makeTimeout(blocks = 2) {
+async function makeTimeout(blocks = 1000) {
   const connection = await EthereumConnection.establish(TEST_URL);
   const currentHeight = await connection.height();
   connection.disconnect();

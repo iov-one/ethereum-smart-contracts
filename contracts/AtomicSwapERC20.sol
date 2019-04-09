@@ -47,8 +47,13 @@ contract AtomicSwapERC20 {
         _;
     }
 
-    modifier onlyAbortableSwaps(bytes32 id) {
+    modifier onlyExpiredSwaps(bytes32 id) {
         require(block.number >= swaps[id].timeout, "Swap timeout has not been reached");
+        _;
+    }
+
+    modifier onlyNonExpiredSwaps(bytes32 id) {
+        require(block.number < swaps[id].timeout, "Swap timeout has been reached");
         _;
     }
 
@@ -80,7 +85,7 @@ contract AtomicSwapERC20 {
     function claim(
         bytes32 id,
         bytes32 preimage
-    ) external onlyOpenSwaps(id) onlyWithValidPreimage(id, preimage) {
+    ) external onlyOpenSwaps(id) onlyNonExpiredSwaps(id) onlyWithValidPreimage(id, preimage) {
         swaps[id].state = State.CLAIMED;
         swaps[id].preimage = preimage;
 
@@ -93,7 +98,7 @@ contract AtomicSwapERC20 {
 
     function abort(
         bytes32 id
-    ) external onlyOpenSwaps(id) onlyAbortableSwaps(id) {
+    ) external onlyOpenSwaps(id) onlyExpiredSwaps(id) {
         swaps[id].state = State.ABORTED;
 
         Swap memory swap = swaps[id];

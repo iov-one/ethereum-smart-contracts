@@ -1,6 +1,6 @@
 const BN = require("bn.js");
 const { expect, expectEvent } = require("./setup");
-const { getEthBalance, makeRandomAddress, makeRandomId, makeTimeout, sleep } = require("./utils");
+const { getEthBalance, makeRandomAddress, makeRandomId, makeTimeout } = require("./utils");
 
 const atomicSwap = artifacts.require("./AtomicSwapEther.sol");
 
@@ -163,6 +163,15 @@ contract("AtomicSwapEther", accounts => {
       );
     });
 
+    it("errors when attempting to claim a swap after the timeout", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
+
+      await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(/swap timeout has been reached/i);
+    });
+
     it("errors when attempting to claim a swap which has already been claimed", async () => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
@@ -180,7 +189,6 @@ contract("AtomicSwapEther", accounts => {
       const timeout = await makeTimeout(1);
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(
@@ -198,7 +206,6 @@ contract("AtomicSwapEther", accounts => {
         from: defaultSender,
         value: defaultAmount,
       });
-      await sleep(2);
       const initialBalanceContract = await getEthBalance(testContract.address);
       const initialBalanceSender = await getEthBalance(defaultSender);
       const initialBalanceRecipient = await getEthBalance(defaultRecipient);
@@ -221,7 +228,6 @@ contract("AtomicSwapEther", accounts => {
       const timeout = await makeTimeout(1);
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
-      await sleep(2);
 
       const { tx } = await testContract.abort(id, { from: defaultSender });
 
@@ -240,7 +246,7 @@ contract("AtomicSwapEther", accounts => {
 
     it("errors when attempting to abort before the timeout", async () => {
       const id = makeRandomId();
-      const timeout = await makeTimeout(1e5);
+      const timeout = await makeTimeout();
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
 
@@ -264,7 +270,6 @@ contract("AtomicSwapEther", accounts => {
       const timeout = await makeTimeout(1);
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       await expect(testContract.abort(id, { from: defaultSender })).to.be.rejectedWith(
@@ -321,7 +326,6 @@ contract("AtomicSwapEther", accounts => {
         from: defaultSender,
         value: defaultAmount,
       });
-      await sleep(2);
       await testContract.abort(id, { from: defaultSender });
 
       const result = await testContract.get(id);
