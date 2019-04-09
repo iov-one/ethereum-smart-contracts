@@ -20,7 +20,14 @@ contract AtomicSwapEther {
 
     mapping (bytes32 => Swap) private swaps;
 
-    event Opened(bytes32 id, address recipient, bytes32 hash);
+    event Opened(
+        bytes32 id,
+        address sender,
+        address recipient,
+        bytes32 hash,
+        uint256 amount,
+        uint256 timeout
+    );
     event Claimed(bytes32 id, bytes32 preimage);
     event Aborted(bytes32 id);
 
@@ -70,7 +77,7 @@ contract AtomicSwapEther {
             preimage: bytes32(0)
         });
 
-        emit Opened(id, recipient, hash);
+        emit Opened(id, msg.sender, recipient, hash, msg.value, timeout);
     }
 
     function claim(
