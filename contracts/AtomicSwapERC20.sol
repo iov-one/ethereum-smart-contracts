@@ -23,7 +23,15 @@ contract AtomicSwapERC20 {
 
     mapping (bytes32 => Swap) private swaps;
 
-    event Opened(bytes32 id, address recipient, bytes32 hash, address erc20ContractAddress);
+    event Opened(
+        bytes32 id,
+        address sender,
+        address recipient,
+        bytes32 hash,
+        uint256 amount,
+        uint256 timeout,
+        address erc20ContractAddress
+    );
     event Claimed(bytes32 id, bytes32 preimage);
     event Aborted(bytes32 id);
 
@@ -74,7 +82,7 @@ contract AtomicSwapERC20 {
             erc20ContractAddress: erc20ContractAddress
         });
 
-        emit Opened(id, recipient, hash, erc20ContractAddress);
+        emit Opened(id, msg.sender, recipient, hash, amount, timeout, erc20ContractAddress);
     }
 
     function claim(

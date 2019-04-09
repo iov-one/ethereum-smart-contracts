@@ -68,8 +68,11 @@ contract("AtomicSwapERC20", accounts => {
 
       await expectEvent.inTransaction(tx, atomicSwap, "Opened", {
         id,
+        sender: defaultSender,
         recipient,
         hash: defaultHash,
+        amount: defaultAmount,
+        timeout: new BN(timeout),
         erc20ContractAddress: erc20Contract.address,
       });
     });
