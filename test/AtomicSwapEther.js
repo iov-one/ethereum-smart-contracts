@@ -47,12 +47,18 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const recipient = makeRandomAddress();
       const timeout = await makeTimeout();
-      const { tx } = await testContract.open(id, recipient, defaultHash, timeout, { from: defaultSender });
+      const { tx } = await testContract.open(id, recipient, defaultHash, timeout, {
+        from: defaultSender,
+        value: defaultAmount,
+      });
 
       await expectEvent.inTransaction(tx, atomicSwap, "Opened", {
         id,
+        sender: defaultSender,
         recipient,
         hash: defaultHash,
+        amount: defaultAmount,
+        timeout: new BN(timeout),
       });
     });
 
@@ -62,14 +68,20 @@ contract("AtomicSwapEther", accounts => {
       {
         const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
-        await testContract.open(id, recipient, defaultHash, timeout, { from: defaultSender });
+        await testContract.open(id, recipient, defaultHash, timeout, {
+          from: defaultSender,
+          value: defaultAmount,
+        });
       }
 
       {
         const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
         await expect(
-          testContract.open(id, recipient, defaultHash, timeout, { from: defaultSender }),
+          testContract.open(id, recipient, defaultHash, timeout, {
+            from: defaultSender,
+            value: defaultAmount,
+          }),
         ).to.be.rejectedWith(/swap id already exists/i);
       }
     });
