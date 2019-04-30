@@ -12,8 +12,8 @@ contract("AtomicSwapEther", accounts => {
   const defaultAmountBN = new BN(defaultAmount);
   const defaultSender = accounts[1];
   const defaultRecipient = accounts[2];
-  // Needed for clean balance comparisons
-  const defaultClaimer = accounts[3];
+  const defaultThirdParty = accounts[3];
+  const defaultFeeMarginBN = new BN("100000000000000000");
 
   let testContract;
 
@@ -100,7 +100,36 @@ contract("AtomicSwapEther", accounts => {
       const initialBalanceSender = await getEthBalance(defaultSender);
       const initialBalanceRecipient = await getEthBalance(defaultRecipient);
 
-      await testContract.claim(id, defaultPreimage, { from: defaultClaimer });
+      await testContract.claim(id, defaultPreimage, { from: defaultRecipient });
+
+      await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceContract.sub(defaultAmountBN),
+      );
+      await expect(getEthBalance(defaultSender)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceSender,
+      );
+      // Fees can vary
+      await expect(getEthBalance(defaultRecipient)).eventually.to.be.a.bignumber.that.is.lessThan(
+        initialBalanceRecipient.add(defaultAmountBN),
+      );
+      await expect(getEthBalance(defaultRecipient)).eventually.to.be.a.bignumber.that.is.greaterThan(
+        initialBalanceRecipient.add(defaultAmountBN).sub(defaultFeeMarginBN),
+      );
+    });
+
+    it("disburses ether to recipient when claimed by a third party", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout();
+
+      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+        from: defaultSender,
+        value: defaultAmount,
+      });
+      const initialBalanceContract = await getEthBalance(testContract.address);
+      const initialBalanceSender = await getEthBalance(defaultSender);
+      const initialBalanceRecipient = await getEthBalance(defaultRecipient);
+
+      await testContract.claim(id, defaultPreimage, { from: defaultThirdParty });
 
       await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),
@@ -181,7 +210,9 @@ contract("AtomicSwapEther", accounts => {
 
       await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
 
-      await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(/swap timeout has been reached/i);
+      await expect(testContract.claim(id, defaultPreimage, { from: defaultRecipient })).to.be.rejectedWith(
+        /swap timeout has been reached/i,
+      );
     });
 
     it("errors when attempting to claim a swap which has already been claimed", async () => {
@@ -222,7 +253,36 @@ contract("AtomicSwapEther", accounts => {
       const initialBalanceSender = await getEthBalance(defaultSender);
       const initialBalanceRecipient = await getEthBalance(defaultRecipient);
 
-      await testContract.abort(id, { from: defaultClaimer });
+      await testContract.abort(id, { from: defaultSender });
+
+      await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceContract.sub(defaultAmountBN),
+      );
+      // Fees can vary
+      await expect(getEthBalance(defaultSender)).eventually.to.be.a.bignumber.that.is.lessThan(
+        initialBalanceSender.add(defaultAmountBN),
+      );
+      await expect(getEthBalance(defaultSender)).eventually.to.be.a.bignumber.that.is.greaterThan(
+        initialBalanceSender.add(defaultAmountBN).sub(defaultFeeMarginBN),
+      );
+      await expect(getEthBalance(defaultRecipient)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceRecipient,
+      );
+    });
+
+    it("returns ether to sender when aborted by a third party", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+        from: defaultSender,
+        value: defaultAmount,
+      });
+      const initialBalanceContract = await getEthBalance(testContract.address);
+      const initialBalanceSender = await getEthBalance(defaultSender);
+      const initialBalanceRecipient = await getEthBalance(defaultRecipient);
+
+      await testContract.abort(id, { from: defaultThirdParty });
 
       await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
         initialBalanceContract.sub(defaultAmountBN),

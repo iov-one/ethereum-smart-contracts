@@ -13,6 +13,7 @@ contract("AtomicSwapERC20", accounts => {
   const defaultAmountBN = new BN(defaultAmount);
   const defaultSender = accounts[1];
   const defaultRecipient = accounts[2];
+  const defaultThirdParty = accounts[3];
 
   let testContract;
   let erc20Contract;
@@ -146,6 +147,38 @@ contract("AtomicSwapERC20", accounts => {
       const initialBalanceRecipient = await getErc20Balance(erc20Contract, defaultRecipient);
 
       await testContract.claim(id, defaultPreimage, { from: defaultRecipient });
+
+      await expect(
+        getErc20Balance(erc20Contract, testContract.address),
+      ).eventually.to.be.a.bignumber.that.equals(initialBalanceContract.sub(defaultAmountBN));
+      await expect(getErc20Balance(erc20Contract, defaultSender)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceSender,
+      );
+      await expect(getErc20Balance(erc20Contract, defaultRecipient)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceRecipient.add(defaultAmountBN),
+      );
+    });
+
+    it("disburses tokens to recipient when claimed by a third party", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout();
+
+      await testContract.open(
+        id,
+        defaultRecipient,
+        defaultHash,
+        timeout,
+        erc20Contract.address,
+        defaultAmount,
+        {
+          from: defaultSender,
+        },
+      );
+      const initialBalanceContract = await getErc20Balance(erc20Contract, testContract.address);
+      const initialBalanceSender = await getErc20Balance(erc20Contract, defaultSender);
+      const initialBalanceRecipient = await getErc20Balance(erc20Contract, defaultRecipient);
+
+      await testContract.claim(id, defaultPreimage, { from: defaultThirdParty });
 
       await expect(
         getErc20Balance(erc20Contract, testContract.address),
@@ -333,6 +366,38 @@ contract("AtomicSwapERC20", accounts => {
       const initialBalanceRecipient = await getErc20Balance(erc20Contract, defaultRecipient);
 
       await testContract.abort(id, { from: defaultSender });
+
+      await expect(
+        getErc20Balance(erc20Contract, testContract.address),
+      ).eventually.to.be.a.bignumber.that.equals(initialBalanceContract.sub(defaultAmountBN));
+      await expect(getErc20Balance(erc20Contract, defaultSender)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceSender.add(defaultAmountBN),
+      );
+      await expect(getErc20Balance(erc20Contract, defaultRecipient)).eventually.to.be.a.bignumber.that.equals(
+        initialBalanceRecipient,
+      );
+    });
+
+    it("returns tokens to sender when aborted by a third party", async () => {
+      const id = makeRandomId();
+      const timeout = await makeTimeout(1);
+
+      await testContract.open(
+        id,
+        defaultRecipient,
+        defaultHash,
+        timeout,
+        erc20Contract.address,
+        defaultAmount,
+        {
+          from: defaultSender,
+        },
+      );
+      const initialBalanceContract = await getErc20Balance(erc20Contract, testContract.address);
+      const initialBalanceSender = await getErc20Balance(erc20Contract, defaultSender);
+      const initialBalanceRecipient = await getErc20Balance(erc20Contract, defaultRecipient);
+
+      await testContract.abort(id, { from: defaultThirdParty });
 
       await expect(
         getErc20Balance(erc20Contract, testContract.address),
