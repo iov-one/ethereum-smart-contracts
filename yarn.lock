@@ -3197,13 +3197,12 @@ openzeppelin-solidity@^2.2.0:
   resolved "https://registry.yarnpkg.com/openzeppelin-solidity/-/openzeppelin-solidity-2.2.0.tgz#1f0e857f53bda29b77a8e72f9a629db81015fd34"
   integrity sha512-HfQq0xyT+EPs/lTWEd5Odu4T7CYdYe+qwf54EH28FQZthp4Bs6IWvOlOumTdS2dvpwZoTXURAopHn2LN1pwAGQ==
 
-openzeppelin-test-helpers@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/openzeppelin-test-helpers/-/openzeppelin-test-helpers-0.2.0.tgz#bd0c8489897a2d63a7e062b528494a912c11b100"
-  integrity sha512-6tVzMy6t68dGcSOAwEPFYvJUqbek/aaJSjt+QjVshqV4yCOBR4f+CRzk1bjU/rh0aUp6Dkv9C5sHbr3dIp/ZlA==
+openzeppelin-test-helpers@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/openzeppelin-test-helpers/-/openzeppelin-test-helpers-0.3.2.tgz#87552090a36751428be513afa349e3a59a40ee1e"
+  integrity sha512-PFTIzyYswBt5IiZu/qayIjnS1HJ+Mr0ekVzLfube/qcUGvoA4Ru5SJdit2FYKljaPdiyvLD1jYJJecA50A2RtA==
   dependencies:
     ansi-colors "^3.2.3"
-    chai "^4.2.0"
     chai-bn "^0.1.1"
     ethjs-abi "^0.2.1"
     semver "^5.6.0"
