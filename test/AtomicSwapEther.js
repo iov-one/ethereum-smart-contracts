@@ -102,11 +102,6 @@ contract("AtomicSwapEther", accounts => {
       const initialBalanceSender = await getEthBalance(defaultSender);
       const initialBalanceRecipient = await getEthBalance(defaultRecipient);
 
-      console.log("Recipitent");
-      console.log(defaultRecipient);
-      console.log("Addresse");
-      console.log(initialBalanceRecipient);
-
       await testContract.claim(id, defaultRecipient, { from: defaultArbiter });
 
       await expect(getEthBalance(testContract.address)).eventually.to.be.a.bignumber.that.equals(
@@ -199,7 +194,7 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout(1);
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, {
         from: defaultSender,
         value: defaultAmount,
       });
@@ -228,7 +223,7 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout(1);
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, {
         from: defaultSender,
         value: defaultAmount,
       });
@@ -253,7 +248,7 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout(1);
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, { from: defaultSender });
 
       const { tx } = await testContract.abort(id, { from: defaultSender });
 
@@ -274,7 +269,7 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, { from: defaultSender });
 
       await expect(testContract.abort(id)).to.be.rejectedWith(/swap timeout has not been reached/i);
     });
@@ -283,8 +278,8 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
-      await testContract.claim(id, defaultPreimage, { from: defaultRecipient });
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, { from: defaultSender });
+      await testContract.claim(id, defaultRecipient, { from: defaultArbiter });
 
       await expect(testContract.abort(id, { from: defaultSender })).to.be.rejectedWith(
         /no open swap found for the given id/i,
@@ -295,7 +290,7 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout(1);
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, { from: defaultSender });
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, { from: defaultSender });
       await testContract.abort(id, { from: defaultSender });
 
       await expect(testContract.abort(id, { from: defaultSender })).to.be.rejectedWith(
@@ -309,38 +304,39 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, {
         from: defaultSender,
         value: defaultAmount,
       });
 
       const result = await testContract.get(id);
       expect(result.sender).to.equal(defaultSender);
-      expect(result.recipient).to.equal(defaultRecipient);
+      expect(result.recipient).to.equal(defaultSender);
+      expect(result.arbiter).to.equal(defaultArbiter);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
-      expect(result.preimage).to.equal(nullPreimage);
       expect(result.state).to.be.a.bignumber.that.equals(new BN(1));
     });
 
-    it("shows a claimed swap by id including preimage", async () => {
+    it("shows a claimed swap by id", async () => {
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, {
         from: defaultSender,
         value: defaultAmount,
       });
-      await testContract.claim(id, defaultPreimage);
+
+      await testContract.claim(id, defaultRecipient, { from: defaultArbiter });
 
       const result = await testContract.get(id);
       expect(result.sender).to.equal(defaultSender);
       expect(result.recipient).to.equal(defaultRecipient);
+      expect(result.arbiter).to.equal(defaultArbiter);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
-      expect(result.preimage).to.equal(defaultPreimage);
       expect(result.state).to.be.a.bignumber.that.equals(new BN(2));
     });
 
@@ -348,19 +344,20 @@ contract("AtomicSwapEther", accounts => {
       const id = makeRandomId();
       const timeout = await makeTimeout(1);
 
-      await testContract.open(id, defaultRecipient, defaultHash, timeout, {
+      await testContract.open(id, defaultArbiter, defaultHash, timeout, {
         from: defaultSender,
         value: defaultAmount,
       });
+
       await testContract.abort(id, { from: defaultSender });
 
       const result = await testContract.get(id);
       expect(result.sender).to.equal(defaultSender);
-      expect(result.recipient).to.equal(defaultRecipient);
+      expect(result.recipient).to.equal(defaultSender);
+      expect(result.arbiter).to.equal(defaultArbiter);
       expect(result.hash).to.equal(defaultHash);
       expect(result.timeout).to.be.a.bignumber.that.equals(new BN(timeout));
       expect(result.amount).to.be.a.bignumber.that.equals(defaultAmount);
-      expect(result.preimage).to.equal(nullPreimage);
       expect(result.state).to.be.a.bignumber.that.equals(new BN(3));
     });
 
