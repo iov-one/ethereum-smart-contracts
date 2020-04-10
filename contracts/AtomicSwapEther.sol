@@ -12,10 +12,10 @@ contract AtomicSwapEther {
         State state;
         address payable sender;
         address payable recipient;
+        address arbiter;
         bytes32 hash;
         uint256 amount;
         uint256 timeout;
-        bytes32 preimage;
     }
 
     mapping (bytes32 => Swap) private swaps;
@@ -24,11 +24,12 @@ contract AtomicSwapEther {
         bytes32 id,
         address sender,
         address recipient,
+        address arbiter,
         bytes32 hash,
         uint256 amount,
         uint256 timeout
     );
-    event Claimed(bytes32 id, bytes32 preimage);
+    event Claimed(bytes32 id, address recipient);
     event Aborted(bytes32 id);
 
     modifier onlyExistentSwaps(bytes32 id) {
@@ -46,8 +47,8 @@ contract AtomicSwapEther {
         _;
     }
 
-    modifier onlyWithValidPreimage(bytes32 id, bytes32 preimage) {
-        require(swaps[id].hash == sha256(abi.encodePacked(preimage)), "Invalid preimage for swap hash");
+    modifier onlyArbiter(bytes32 id) {
+        require(swaps[id].arbiter == msg.sender, "Allow only with arbiter address");
         _;
     }
 
@@ -63,34 +64,34 @@ contract AtomicSwapEther {
 
     function open(
         bytes32 id,
-        address payable recipient,
+        address arbiter,
         bytes32 hash,
         uint256 timeout
     ) external payable onlyNonExistentSwaps(id) {
         swaps[id] = Swap({
             state: State.OPEN,
             sender: msg.sender,
-            recipient: recipient,
+            recipient: msg.sender,
+            arbiter: arbiter,
             hash: hash,
             amount: msg.value,
-            timeout: timeout,
-            preimage: bytes32(0)
+            timeout: timeout
         });
 
-        emit Opened(id, msg.sender, recipient, hash, msg.value, timeout);
+        emit Opened(id, msg.sender, msg.sender, arbiter, hash, msg.value, timeout);
     }
 
     function claim(
         bytes32 id,
-        bytes32 preimage
-    ) external onlyOpenSwaps(id) onlyNonExpiredSwaps(id) onlyWithValidPreimage(id, preimage) {
+        address payable recipient
+    ) external onlyOpenSwaps(id) onlyNonExpiredSwaps(id) onlyArbiter(id) {
         swaps[id].state = State.CLAIMED;
-        swaps[id].preimage = preimage;
+        swaps[id].recipient = recipient;
 
         Swap memory swap = swaps[id];
         swap.recipient.transfer(swap.amount);
 
-        emit Claimed(id, preimage);
+        emit Claimed(id, recipient);
     }
 
     function abort(
@@ -109,20 +110,20 @@ contract AtomicSwapEther {
     ) external view onlyExistentSwaps(id) returns (
         address sender,
         address recipient,
+        address arbiter,
         bytes32 hash,
         uint256 timeout,
         uint256 amount,
-        bytes32 preimage,
         State state
     ) {
         Swap memory swap = swaps[id];
         return (
             swap.sender,
             swap.recipient,
+            swap.arbiter,
             swap.hash,
             swap.timeout,
             swap.amount,
-            swap.preimage,
             swap.state
         );
     }

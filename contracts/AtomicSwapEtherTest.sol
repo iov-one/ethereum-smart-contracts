@@ -19,30 +19,30 @@ contract AtomicSwapEtherTest is AtomicSwapEther {
             state: State.OPEN,
             sender: msg.sender,
             recipient: msg.sender,
+            arbiter: msg.sender,
             hash: "open",
             amount: 50000,
-            timeout: 100,
-            preimage: bytes32(0)
+            timeout: 100
         });
 
         swaps[claimedID] = Swap({
             state: State.CLAIMED,
             sender: msg.sender,
             recipient: msg.sender,
+            arbiter: msg.sender,
             hash: "claimed",
             amount: 50000,
-            timeout: 100,
-            preimage: "preimage"
+            timeout: 100
         });
 
         swaps[abortedID] = Swap({
             state: State.ABORTED,
             sender: msg.sender,
             recipient: msg.sender,
+            arbiter: msg.sender,
             hash: "aborted",
             amount: 50000,
-            timeout: 100,
-            preimage: bytes32(0)
+            timeout: 100
         });
     }
 
@@ -50,9 +50,9 @@ contract AtomicSwapEtherTest is AtomicSwapEther {
         return swaps[openID].state != State.NON_EXISTENT;
     }
 
-    function echidna_open_never_claimed_with_incorrect_preimage() public view returns(bool) {
+    function echidna_open_never_claimed() public view returns(bool) {
         Swap memory swap = swaps[openID];
-        return swap.state != State.CLAIMED || swap.hash == sha256(abi.encodePacked(swap.preimage));
+        return swap.state != State.CLAIMED;
     }
 
     function echidna_open_never_aborted_before_timeout() public view returns(bool) {
