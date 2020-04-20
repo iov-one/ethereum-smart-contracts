@@ -7,7 +7,6 @@ const atomicSwap = artifacts.require("./EscrowEther.sol");
 contract("EscrowEther", accounts => {
   const defaultPreimage = "0x42a990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
   const defaultHash = "0x261c74f7dd1ed6a069e18375ab2bee9afcb1095613f53b07de11829ac66cdfcc";
-  const nullPreimage = "0x0000000000000000000000000000000000000000000000000000000000000000";
   const defaultAmount = "50000000";
   const defaultAmountBN = new BN(defaultAmount);
   const defaultSender = accounts[1];
@@ -68,7 +67,6 @@ contract("EscrowEther", accounts => {
       const id = makeRandomId();
 
       {
-        const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
         await testContract.open(id, defaultArbiter, defaultHash, timeout, {
           from: defaultSender,
@@ -77,7 +75,6 @@ contract("EscrowEther", accounts => {
       }
 
       {
-        const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
         await expect(
           testContract.open(id, defaultArbiter, defaultHash, timeout, {
@@ -142,7 +139,6 @@ contract("EscrowEther", accounts => {
     });
 
     it("errors when attempting to claim a swap with not an arbiter", async () => {
-      const preimage = `0x5${defaultPreimage.slice(3)}`;
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
