@@ -1,11 +1,10 @@
 const BN = require("bn.js");
 const { expect, expectEvent } = require("./setup");
-const { getEthBalance, makeRandomAddress, makeRandomId, makeTimeout } = require("./utils");
+const { getEthBalance, makeRandomId, makeTimeout } = require("./utils");
 
 const atomicSwap = artifacts.require("./EscrowEther.sol");
 
 contract("EscrowEther", accounts => {
-  const defaultPreimage = "0x42a990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
   const defaultHash = "0x261c74f7dd1ed6a069e18375ab2bee9afcb1095613f53b07de11829ac66cdfcc";
   const defaultAmount = "50000000";
   const defaultAmountBN = new BN(defaultAmount);
