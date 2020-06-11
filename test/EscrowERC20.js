@@ -6,9 +6,7 @@ const atomicSwap = artifacts.require("./EscrowERC20.sol");
 const erc20 = artifacts.require("./AshToken.sol");
 
 contract("EscrowERC20", accounts => {
-  const defaultPreimage = "0x42a990655bffe188c9823a2f914641a32dcbb1b28e8586bd29af291db7dcd4e8";
   const defaultHash = "0x261c74f7dd1ed6a069e18375ab2bee9afcb1095613f53b07de11829ac66cdfcc";
-  const nullPreimage = "0x0000000000000000000000000000000000000000000000000000000000000000";
   const defaultAmount = "50000000";
   const defaultAmountBN = new BN(defaultAmount);
   const defaultSender = accounts[1];
@@ -55,7 +53,6 @@ contract("EscrowERC20", accounts => {
 
     it("emits an Opened event", async () => {
       const id = makeRandomId();
-      const recipient = makeRandomAddress();
       const timeout = await makeTimeout();
       const { tx } = await testContract.open(
         id,
@@ -85,7 +82,6 @@ contract("EscrowERC20", accounts => {
       const id = makeRandomId();
 
       {
-        const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
         await testContract.open(id, defaultArbiter, defaultHash, timeout, erc20Contract.address, defaultAmount, {
           from: defaultSender,
@@ -93,7 +89,6 @@ contract("EscrowERC20", accounts => {
       }
 
       {
-        const recipient = makeRandomAddress();
         const timeout = await makeTimeout();
         await expect(
           testContract.open(id, defaultArbiter, defaultHash, timeout, erc20Contract.address, defaultAmount, {
@@ -195,7 +190,6 @@ contract("EscrowERC20", accounts => {
     });
 
     it("errors when attempting to claim a swap with incorrect preimage", async () => {
-      const preimage = `0x5${defaultPreimage.slice(3)}`;
       const id = makeRandomId();
       const timeout = await makeTimeout();
 
