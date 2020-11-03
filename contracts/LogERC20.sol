@@ -12,21 +12,15 @@ contract LogERC20 {
         address contractAddress
     );
 
-    address public erc20ContractAddress;
-    address public bridgeWalletAddress;
-
-    constructor(address _erc20ContractAddress, address _bridgeWalletAddress) public {
-        erc20ContractAddress = _erc20ContractAddress;
-        bridgeWalletAddress = _bridgeWalletAddress;
-    }
-
     function logSendMemo(
-        uint256 _amount,
-        string calldata _memo
-    ) external {
+        uint256 amount,
+        string memory memo,
+        address erc20ContractAddress,
+        address bridgeWalletAddress
+    ) public {
         ERC20 erc20Contract = ERC20(erc20ContractAddress);
-        require(erc20Contract.transferFrom(msg.sender, bridgeWalletAddress, _amount), "ERC20 token transfer was unsuccessful");
+        require(erc20Contract.transferFrom(msg.sender, bridgeWalletAddress, amount), "ERC20 token transfer was unsuccessful");
 
-        emit hasBenSent(msg.sender, bridgeWalletAddress, _memo, _amount, erc20ContractAddress);
+        emit hasBenSent(msg.sender, bridgeWalletAddress, memo, amount, erc20ContractAddress);
     }
 }
