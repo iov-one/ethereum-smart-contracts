@@ -35,7 +35,7 @@ contract("LogERC20", accounts => {
       const timeout = await makeTimeout();
       
       const initialBalanceSender = await getErc20Balance(erc20Contract, defaultSender);
-      const initialBalanceReceiver = await getErc20Balance(erc20Contract, "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4");
+      const initialBalanceReceiver = await getErc20Balance(erc20Contract, "0xb84dfa9cc6bf0ce32e11fe259b9311ce8d30ac4c");
 
       const balance = await erc20Contract.balanceOf(defaultSender);
       console.log(balance.toString());
@@ -43,7 +43,7 @@ contract("LogERC20", accounts => {
       await testContract.logSendMemo(defaultAmount, "blini",  { from: defaultSender });
       
       await expect(
-        getErc20Balance(erc20Contract, "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4"),
+        getErc20Balance(erc20Contract, "0xb84dfa9cc6bf0ce32e11fe259b9311ce8d30ac4c"),
       ).eventually.to.be.a.bignumber.that.equals(initialBalanceReceiver.add(defaultAmountBN));
 
       await expect(getErc20Balance(erc20Contract, accounts[1])).eventually.to.be.a.bignumber.that.equals(
@@ -58,16 +58,16 @@ contract("LogERC20", accounts => {
       const timeout = await makeTimeout();
       const { tx } = await testContract.logSendMemo(
         defaultAmount,
-        "blini2",
+        "blini",
         {
           from: defaultSender,
         },
       );
 
-      await expectEvent.inTransaction(tx, logERC20, "hasBenSent", {
+      await expectEvent.inTransaction(tx, logERC20, "hasBeenSent", {
         sender: defaultSender,
-        recipient: "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4",
-        memo: "blini",
+        recipient: "0xB84DFa9CC6Bf0ce32E11FE259b9311CE8d30ac4c",
+        target: "blini",
         amount: defaultAmount,
         contractAddress: erc20Contract.address,
       });
