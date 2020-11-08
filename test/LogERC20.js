@@ -41,7 +41,7 @@ contract("LogERC20", accounts => {
       const balance = await erc20Contract.balanceOf(defaultSender);
       console.log(balance.toString());
 
-      await testContract.logSendMemo(defaultAmount, "blini", erc20Contract.address, "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4", { from: defaultSender });
+      await testContract.logSendMemo(defaultAmount, "blini",  { from: defaultSender });
       
       await expect(
         getErc20Balance(erc20Contract, "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4"),
@@ -59,9 +59,7 @@ contract("LogERC20", accounts => {
       const timeout = await makeTimeout();
       const { tx } = await testContract.logSendMemo(
         defaultAmount,
-        "blini",
-        erc20Contract.address,
-        "0xA39a3c43d59a79954Cd917624C05aDDeBCac4aF4",
+        "blini2",
         {
           from: defaultSender,
         },
