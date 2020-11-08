@@ -3,7 +3,7 @@ const { expect, expectEvent } = require("./setup");
 const { getErc20Balance, makeRandomAddress, makeRandomId, makeTimeout } = require("./utils");
 
 const logERC20 = artifacts.require("./LogERC20.sol");
-const erc20 = artifacts.require("./AshToken.sol");
+const erc20 = artifacts.require("./TrashToken.sol");
 
 contract("LogERC20", accounts => {
   const defaultAmount = "50000000";
@@ -16,11 +16,10 @@ contract("LogERC20", accounts => {
   let erc20Contract;
 
   before(async () => {
-    testContract = await logERC20.deployed();
-    console.log("DISPLAY CONTRACT")
-    console.log(testContract);
     erc20Contract = await erc20.deployed();
+    testContract = await logERC20.deployed();
 
+    
     await erc20Contract.mint(defaultSender, "2" + "0".repeat(15));
     await erc20Contract.mint(defaultRecipient, "1" + "0".repeat(15));
   });
