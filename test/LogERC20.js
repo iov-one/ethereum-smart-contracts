@@ -10,7 +10,6 @@ contract("LogERC20", accounts => {
   const defaultAmountBN = new BN(defaultAmount);
   const defaultSender = accounts[1];
   const defaultRecipient = accounts[2];
-  const defaultThirdParty = accounts[3];
 
   let testContract;
   let erc20Contract;
@@ -38,7 +37,6 @@ contract("LogERC20", accounts => {
       const initialBalanceReceiver = await getErc20Balance(erc20Contract, "0xb84dfa9cc6bf0ce32e11fe259b9311ce8d30ac4c");
 
       const balance = await erc20Contract.balanceOf(defaultSender);
-      console.log(balance.toString());
 
       await testContract.logSendMemo(defaultAmount, "blini",  { from: defaultSender });
       
@@ -53,9 +51,6 @@ contract("LogERC20", accounts => {
     });
 
     it("emits an Opened event", async () => {
-      const id = makeRandomId();
-      const recipient = makeRandomAddress();
-      const timeout = await makeTimeout();
       const { tx } = await testContract.logSendMemo(
         defaultAmount,
         "blini",
