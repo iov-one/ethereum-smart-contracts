@@ -26,7 +26,6 @@ contract LogERC20 {
     ) public {
         ERC20 erc20Contract = ERC20(erc20ContractAddress);
         require(erc20Contract.transferFrom(msg.sender, bridgeWalletAddress, amount), "ERC20 token transfer was unsuccessful");
-
         emit hasBeenSent(msg.sender, bridgeWalletAddress, target, amount, erc20ContractAddress);
     }
 }
